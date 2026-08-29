@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+.env
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+.cxx/
+captures/
+*.keystore
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

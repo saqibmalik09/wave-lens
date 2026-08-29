@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id               Int      @id @default(autoincrement())
+  name             String
+  contactEmail     String?  @map("contact_email")
+  bundleId         String   @map("bundle_id")
+  clientId         String   @unique @map("client_id")
+  clientSecretHash String   @map("client_secret_hash")
+  status           String   @default("active") // active | inactive
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  entitled TenantEntitledFilter[]
+  enabled  TenantEnabledFilter[]
+
+  @@map("tenants")
+}
+
+model Filter {
+  id               String   @id // e.g. "bw", "glow", "brightness"
+  name             String
+  category         String // color | masks | backgrounds | ...
+  type             String // continuous | discrete
+  assetRef         String?  @map("asset_ref")
+  minEngineVersion Int      @default(1) @map("min_engine_version")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  entitled TenantEntitledFilter[]
+  enabled  TenantEnabledFilter[]
+
+  @@map("filters")
+}
+
+// Admin-controlled ceiling: what the tenant CAN enable.
+model TenantEntitledFilter {
+  tenantId Int    @map("tenant_id")
+  filterId String @map("filter_id")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  filter Filter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, filterId])
+  @@map("tenant_entitled_filters")
+}
+
+// Tenant-controlled switch: what is actually ON (must be a subset of entitled).
+model TenantEnabledFilter {
+  tenantId Int    @map("tenant_id")
+  filterId String @map("filter_id")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  filter Filter @relation(fields: [filterId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, filterId])
+  @@map("tenant_enabled_filters")
+}
