@@ -4,44 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Wave Lens — Real-Time Camera Filters for Live, Video &amp; Calling Apps</title>
-  <meta name="description" content="Wave Lens adds real-time camera filters to live streaming apps, video apps, calling apps and any camera-based application. Beauty effects, face stickers, backgrounds. WhatsApp +9232565427 · supportwavetech@gmail.online">
-  <meta name="keywords" content="Wave Lens, real-time camera filters, live streaming filters, video calling filters, camera SDK, face filters, beauty filters, Wave Tech, WhatsApp +9232565427">
-  <meta name="author" content="Wave Lens">
-  <meta name="robots" content="index, follow">
+  <meta name="description" content="Wave Lens adds real-time camera filters to any Android app — live streaming, video, calling &amp; camera apps. Kotlin, Java, Flutter, React Native. WhatsApp +9232565427">
+  <meta name="keywords" content="Wave Lens, Android camera filters SDK, Kotlin Java Flutter React Native, live streaming filters, Wave Tech">
   <link rel="canonical" href="https://wavelens.online/">
-  <meta property="og:title" content="Wave Lens — Real-Time Camera Filters">
-  <meta property="og:description" content="Filters for live streaming, video, calling &amp; any camera app. WhatsApp +9232565427">
-  <meta property="og:url" content="https://wavelens.online/">
-  <meta property="og:site_name" content="Wave Lens">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/logo.png" type="image/png">
 </head>
 <body>
   <header class="header">
     <div class="container header__inner">
       <a href="/" class="logo">
-        <img src="assets/logo.png" alt="Wave Lens" class="logo__img" width="36" height="36">
-        <span class="logo__text">Wave Lens</span>
+        <img src="/assets/logo.png" alt="Wave Lens" class="logo__img" width="36" height="36">
+        <span class="logo__text wave-gradient-text">Wave Lens</span>
       </a>
-
       <nav id="mainNav" class="nav" aria-label="Main">
+        <a href="#integrate">Integrate</a>
         <a href="#filters">Filters</a>
-        <a href="#customers">Who it's for</a>
-        <a href="#features">Features</a>
+        <a href="#customers">Use cases</a>
         <a href="#contact">Contact</a>
         <a href="https://studio.wavelens.online" class="nav__cta">Studio</a>
       </nav>
-
       <div class="header__actions">
         <a href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app."
-           class="header-wa" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp +9232565427">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+           class="header-wa" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           <span class="header-wa__label">WhatsApp</span>
         </a>
-        <button type="button" id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
+        <button type="button" id="menuToggle" class="menu-toggle" aria-label="Menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -50,135 +42,206 @@
 
   <main>
     <section class="hero">
-      <div class="container hero__grid">
-        <div class="hero__copy">
-          <p class="badge">By Wave Tech</p>
-          <h1>Real-time camera filters for every app that uses a camera</h1>
-          <p class="hero__tagline">Beauty, face stickers &amp; backgrounds — smooth, lightweight, and ready for production.</p>
-          <p class="hero__lead">
-            Wave Lens plugs into live streaming apps, short-video platforms, video calling apps,
-            dating apps, social cameras, and any product where users turn on the camera.
-            Professional filters without slowing your app down.
-          </p>
-          <div class="hero__actions">
-            <a href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app." class="btn btn--whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp us</a>
-            <a href="https://studio.wavelens.online" class="btn btn--primary">Open Studio</a>
-            <a href="#filters" class="btn btn--ghost">See filters</a>
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="container hero__inner">
+        <p class="badge">By Wave Tech · Same family as Wave Games</p>
+        <h1>Real-time camera filters for every app that uses a camera</h1>
+        <p class="hero__tagline">Beauty, face stickers &amp; backgrounds — smooth, lightweight, production-ready.</p>
+        <p class="hero__lead">
+          Drop Wave Lens into live streaming apps, video platforms, video calling apps,
+          dating apps, social cameras — any Android product where the camera opens.
+        </p>
+        <div class="hero__actions">
+          <a href="#integrate" class="btn btn--primary">See integration</a>
+          <a href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app." class="btn btn--whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+          <a href="https://studio.wavelens.online" class="btn btn--ghost">Studio</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="integrate" class="section section--integrate">
+      <div class="container">
+        <h2 class="section__title wave-gradient-text">Integrates with any Android platform</h2>
+        <p class="section__subtitle">One SDK — add to your existing stack in minutes. No rewrite needed.</p>
+
+        <div class="tech-grid">
+          <div class="tech-card tech-card--live">
+            <span class="tech-card__icon">🤖</span>
+            <h3>Kotlin</h3>
+            <p>Native Android — drop in the AAR, add <code>WaveLensView</code> to your layout.</p>
+            <span class="tag tag--live">Available now</span>
           </div>
+          <div class="tech-card tech-card--live">
+            <span class="tech-card__icon">☕</span>
+            <h3>Java</h3>
+            <p>Same AAR works from Java activities and fragments — full API access.</p>
+            <span class="tag tag--live">Available now</span>
+          </div>
+          <div class="tech-card tech-card--live">
+            <span class="tech-card__icon">🎯</span>
+            <h3>Jetpack Compose</h3>
+            <p>Wrap <code>WaveLensView</code> in an <code>AndroidView</code> composable.</p>
+            <span class="tag tag--live">Available now</span>
+          </div>
+          <div class="tech-card">
+            <span class="tech-card__icon">💙</span>
+            <h3>Flutter</h3>
+            <p>Thin plugin over the same native core — one platform view in Dart.</p>
+            <span class="tag tag--soon">Coming soon</span>
+          </div>
+          <div class="tech-card">
+            <span class="tech-card__icon">⚛️</span>
+            <h3>React Native</h3>
+            <p>Native module bridge — same compiled engine, JS-side API.</p>
+            <span class="tag tag--soon">Coming soon</span>
+          </div>
+          <div class="tech-card">
+            <span class="tech-card__icon">🍎</span>
+            <h3>iOS (Swift)</h3>
+            <p>XCFramework with the same C++ engine — after Android is proven.</p>
+            <span class="tag tag--soon">Coming soon</span>
+          </div>
+        </div>
+
+        <div class="integrate-steps">
+          <h3>Three steps to go live</h3>
+          <ol>
+            <li><strong>Add the SDK</strong> — one Gradle line + the <code>wavelens</code> AAR.</li>
+            <li><strong>Initialize once</strong> — <code>WaveLens.init(clientId, clientSecret)</code> at app startup.</li>
+            <li><strong>Show the camera</strong> — add <code>WaveLensView</code> where hosts open the filter tray.</li>
+          </ol>
+          <p class="integrate-note">Android 7+ (API 24) · Android 10–17 supported · OpenGL ES 3.0 · armeabi-v7a &amp; arm64-v8a</p>
         </div>
       </div>
     </section>
 
     <section id="customers" class="customers">
       <div class="container">
-        <h2 class="customers__title">Built for apps that use the camera</h2>
+        <h2 class="section__title">Built for apps that use the camera</h2>
         <div class="customers__grid">
-          <article class="customers__card">
-            <span class="customers__icon">📡</span>
-            <h3>Live streaming</h3>
-            <p>TikTok Live, Bigo-style, audio/video live hosts — filters in the tray while broadcasting.</p>
-          </article>
-          <article class="customers__card">
-            <span class="customers__icon">🎬</span>
-            <h3>Video &amp; social apps</h3>
-            <p>Short video, reels, stories, UGC — users record and publish with looks they love.</p>
-          </article>
-          <article class="customers__card">
-            <span class="customers__icon">📞</span>
-            <h3>Video calling</h3>
-            <p>1-to-1 or group calls with subtle beauty or fun face filters during the conversation.</p>
-          </article>
-          <article class="customers__card">
-            <span class="customers__icon">📷</span>
-            <h3>Any camera app</h3>
-            <p>Dating, chat, creator tools, conferencing — if your app opens a camera, Wave Lens fits.</p>
-          </article>
+          <article class="customers__card"><span>📡</span><h3>Live streaming</h3><p>Bigo / TikTok Live-style hosts with a filter tray while broadcasting.</p></article>
+          <article class="customers__card"><span>🎬</span><h3>Video &amp; social</h3><p>Reels, stories, short video — record and publish with looks users love.</p></article>
+          <article class="customers__card"><span>📞</span><h3>Video calling</h3><p>1-to-1 or group calls with beauty or fun face filters.</p></article>
+          <article class="customers__card"><span>📷</span><h3>Any camera app</h3><p>Dating, chat, conferencing, creator tools — if there's a camera, we fit.</p></article>
         </div>
       </div>
     </section>
 
     <section id="filters" class="section section--filters">
       <div class="container">
-        <div class="filters-head">
-          <h2 class="section__title">Filter library</h2>
-          <p class="section__subtitle">Pick a category, tap a filter — preview updates instantly.</p>
-          <div class="filters-head__legend">
-            <span><i class="dot dot--live"></i> Live now</span>
-            <span><i class="dot dot--soon"></i> Coming soon</span>
-          </div>
-        </div>
+        <h2 class="section__title">Filter library</h2>
+        <p class="section__subtitle">Enable only what you need from Studio — hosts see your selected filters in the tray.</p>
 
-        <div class="showcase">
-          <!-- Phone first on mobile -->
-          <div class="showcase__phone-wrap">
-            <div class="demo-phone">
-              <div class="demo-phone__notch" aria-hidden="true"></div>
-              <div class="demo-phone__screen">
-                <div class="demo-phone__face" aria-hidden="true"></div>
-                <div id="filterPreview" class="demo-phone__fx fx-original"></div>
-                <div id="filterSticker" class="demo-phone__sticker" hidden aria-hidden="true"></div>
-                <div class="demo-phone__live-tag"><span></span> LIVE</div>
-                <div class="demo-phone__info">
-                  <span id="activeFilterBadge" class="demo-phone__badge demo-phone__badge--live">Available now</span>
-                  <strong id="activeFilterName">Original</strong>
-                </div>
+        <!-- Static HTML — no JavaScript required -->
+        <div class="filter-catalog">
+          <article class="filter-group">
+            <header class="filter-group__head">
+              <span>🎨</span>
+              <div>
+                <h3>Effects</h3>
+                <p>Color &amp; beauty adjustments</p>
               </div>
-            </div>
-          </div>
+              <span class="tag tag--live">13 live</span>
+            </header>
+            <ul class="filter-list">
+              <li><span class="pill pill--live">Auto</span></li>
+              <li><span class="pill pill--live">Brightness</span></li>
+              <li><span class="pill pill--live">Contrast</span></li>
+              <li><span class="pill pill--live">Saturation</span></li>
+              <li><span class="pill pill--live">Warm</span></li>
+              <li><span class="pill pill--live">Cool</span></li>
+              <li><span class="pill pill--live">B&amp;W</span></li>
+              <li><span class="pill pill--live">Vintage</span></li>
+              <li><span class="pill pill--live">Sepia</span></li>
+              <li><span class="pill pill--live">Glow</span></li>
+              <li><span class="pill pill--live">Film Warm</span></li>
+              <li><span class="pill pill--live">Film Cool</span></li>
+              <li><span class="pill pill--live">Original</span></li>
+            </ul>
+          </article>
 
-          <div class="showcase__picker">
-            <div id="filterTabs" class="cat-bar"></div>
-            <div id="filterGrid" class="filter-cards"></div>
-            <div id="effectSliders" class="demo-sliders">
-              <p class="demo-sliders__title">Fine-tune (Effects)</p>
-              <div class="demo-slider"><label>Brightness</label><div class="demo-slider__track"><div class="demo-slider__fill" style="width:52%"></div></div></div>
-              <div class="demo-slider"><label>Contrast</label><div class="demo-slider__track"><div class="demo-slider__fill" style="width:48%"></div></div></div>
-              <div class="demo-slider"><label>Saturation</label><div class="demo-slider__track"><div class="demo-slider__fill" style="width:55%"></div></div></div>
-              <div class="demo-slider"><label>Warmth</label><div class="demo-slider__track"><div class="demo-slider__fill" style="width:62%"></div></div></div>
-            </div>
-          </div>
+          <article class="filter-group">
+            <header class="filter-group__head">
+              <span>🐱</span>
+              <div><h3>Face filters</h3><p>Head, eyes, nose &amp; mouth stickers</p></div>
+              <span class="tag tag--soon">Phase 3</span>
+            </header>
+            <ul class="filter-list">
+              <li><span class="pill">Cat Ears</span></li>
+              <li><span class="pill">Bunny Ears</span></li>
+              <li><span class="pill">Dog Ears</span></li>
+              <li><span class="pill">Crown</span></li>
+              <li><span class="pill">Sunglasses</span></li>
+              <li><span class="pill">Heart Glasses</span></li>
+              <li><span class="pill">Devil Horns</span></li>
+              <li><span class="pill">Angel Halo</span></li>
+              <li><span class="pill">Eye Makeup</span></li>
+              <li><span class="pill">Freckles</span></li>
+              <li><span class="pill">Mustache</span></li>
+              <li><span class="pill">Clown Nose</span></li>
+              <li><span class="pill">+ 50 more</span></li>
+            </ul>
+          </article>
+
+          <article class="filter-group">
+            <header class="filter-group__head">
+              <span>🖼️</span>
+              <div><h3>Backgrounds</h3><p>Blur, replace &amp; color</p></div>
+              <span class="tag tag--soon">Phase 4</span>
+            </header>
+            <ul class="filter-list">
+              <li><span class="pill">Blur</span></li>
+              <li><span class="pill">Solid Color</span></li>
+              <li><span class="pill">Replace Image</span></li>
+              <li><span class="pill">Bokeh</span></li>
+              <li><span class="pill">Studio</span></li>
+              <li><span class="pill">Nature</span></li>
+            </ul>
+          </article>
+
+          <article class="filter-group">
+            <header class="filter-group__head">
+              <span>✨</span>
+              <div><h3>Animated &amp; festive</h3><p>Moving overlays &amp; seasonal looks</p></div>
+              <span class="tag tag--soon">Phase 3+</span>
+            </header>
+            <ul class="filter-list">
+              <li><span class="pill">Floating Hearts</span></li>
+              <li><span class="pill">Sparkles</span></li>
+              <li><span class="pill">Confetti</span></li>
+              <li><span class="pill">Falling Snow</span></li>
+              <li><span class="pill">Christmas</span></li>
+              <li><span class="pill">Halloween</span></li>
+              <li><span class="pill">Valentine</span></li>
+              <li><span class="pill">Birthday</span></li>
+            </ul>
+          </article>
         </div>
       </div>
     </section>
 
-    <section id="features" class="section">
-      <div class="container">
-        <h2 class="section__title">Why teams choose Wave Lens</h2>
-        <div class="cards">
-          <article class="card"><h3>GPU-powered</h3><p>All pixel work on the GPU — no CPU loops, no heating during long sessions.</p></article>
-          <article class="card"><h3>Lightweight</h3><p>Tiny SDK footprint. Filter packs download on demand — not bundled in your APK.</p></article>
-          <article class="card"><h3>Works offline</h3><p>After first download, filters cache on-device — no network needed mid-stream.</p></article>
-          <article class="card"><h3>Studio control</h3><p>Enable or disable filters per app from <a href="https://studio.wavelens.online">Studio</a>.</p></article>
-          <article class="card"><h3>Fast setup</h3><p>Android today; Flutter &amp; React Native wrappers coming. Minutes to integrate.</p></article>
-          <article class="card"><h3>Production ready</h3><p>Android 10–17, low-end devices, weak networks — tested for real users.</p></article>
-        </div>
+    <section class="section">
+      <div class="container cards">
+        <article class="card"><h3>GPU-powered</h3><p>All rendering on GPU — no CPU pixel loops, no heating.</p></article>
+        <article class="card"><h3>Lightweight</h3><p>Small SDK core. Filter packs download on demand.</p></article>
+        <article class="card"><h3>Works offline</h3><p>Filters cache on-device after first download.</p></article>
+        <article class="card"><h3>Studio control</h3><p>Toggle filters per app from <a href="https://studio.wavelens.online">Studio</a>.</p></article>
       </div>
     </section>
 
-    <section id="contact" class="section section--alt">
+    <section id="contact" class="section section--contact">
       <div class="container contact">
-        <div class="contact__info">
-          <h2>Get in touch</h2>
-          <p>Request SDK access or a demo for your app.</p>
+        <div>
+          <h2 class="section__title">Get in touch</h2>
           <ul class="contact__list">
-            <li class="contact__item--highlight">
-              <strong>WhatsApp</strong>
-              <a href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app." target="_blank" rel="noopener noreferrer">+9232565427</a>
-            </li>
-            <li>
-              <strong>Email</strong>
-              <a href="mailto:supportwavetech@gmail.online">supportwavetech@gmail.online</a>
-            </li>
-            <li>
-              <strong>Studio</strong>
-              <a href="https://studio.wavelens.online">studio.wavelens.online</a>
-            </li>
+            <li><strong>WhatsApp</strong> <a href="https://wa.me/9232565427">+9232565427</a></li>
+            <li><strong>Email</strong> <a href="mailto:supportwavetech@gmail.online">supportwavetech@gmail.online</a></li>
+            <li><strong>Studio</strong> <a href="https://studio.wavelens.online">studio.wavelens.online</a></li>
           </ul>
         </div>
         <div class="contact__actions">
           <a href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app." class="btn btn--whatsapp btn--block btn--large" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
-          <a href="mailto:supportwavetech@gmail.online?subject=Wave%20Lens%20inquiry" class="btn btn--ghost btn--block btn--large">Send email</a>
-          <a href="https://studio.wavelens.online" class="btn btn--primary btn--block btn--large">Open Studio</a>
+          <a href="mailto:supportwavetech@gmail.online" class="btn btn--primary btn--block btn--large">Send email</a>
         </div>
       </div>
     </section>
@@ -189,30 +252,28 @@
       <p>&copy; <span id="year"></span> Wave Lens · Wave Tech</p>
       <p class="footer__links">
         <a href="https://studio.wavelens.online">Studio</a>
-        <a href="https://wa.me/9232565427" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <a href="#contact">Contact</a>
+        <a href="https://wa.me/9232565427">WhatsApp</a>
       </p>
     </div>
   </footer>
 
-  <a class="wa-bar" href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app." target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-    <span>WhatsApp +9232565427</span>
+  <a class="wa-bar" href="https://wa.me/9232565427?text=Hi%20Wave%20Lens%2C%20I%20want%20live%20filters%20for%20my%20app." target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp +9232565427
   </a>
 
-  <script src="filters.js"></script>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
-    const toggle = document.getElementById('menuToggle');
-    const nav = document.getElementById('mainNav');
-    toggle.addEventListener('click', () => {
-      const open = nav.classList.toggle('nav--open');
-      toggle.setAttribute('aria-expanded', open);
-    });
-    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
-      nav.classList.remove('nav--open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }));
+    var t = document.getElementById('menuToggle'), n = document.getElementById('mainNav');
+    if (t && n) {
+      t.onclick = function () {
+        var o = n.classList.toggle('nav--open');
+        t.setAttribute('aria-expanded', o);
+      };
+      n.querySelectorAll('a').forEach(function (a) {
+        a.onclick = function () { n.classList.remove('nav--open'); t.setAttribute('aria-expanded', 'false'); };
+      });
+    }
   </script>
 </body>
 </html>
