@@ -20,7 +20,8 @@ app start or stream start).
 | `assets/` | LUT/look sources and pack-builder tools |
 | `sdk-flutter/` | Flutter plugin wrapper (later phase, placeholder) |
 | `sdk-react-native/` | React Native module wrapper (later phase, placeholder) |
-| `docs/` | Integration guide for tenant developers |
+| `docs/` | Integration guides (Android, RN+Agora, platforms) |
+| `deploy/` | Nginx + one-command `npm run deploy` for server |
 
 ## Quick start (SDK + demo app)
 
@@ -49,10 +50,17 @@ Check it:
 curl "http://localhost:3000/v1/license/status?client_id=wl_demo_client&client_secret=wl_demo_secret&bundle_id=com.wavelens.demo"
 ```
 
-## Tenant integration (the 5-minute promise)
+## Tenant integration
 
-See [docs/INTEGRATION.md](docs/INTEGRATION.md). The whole integration is:
-one Gradle dependency, `WaveLens.init(clientId, clientSecret)`, and one `WaveLensView` in a layout.
+- **Android (native):** [docs/INTEGRATION.md](docs/INTEGRATION.md) — `WaveLens.init` + `WaveLensView`.
+- **React Native + Agora:** [docs/REACT_NATIVE_AGORA.md](docs/REACT_NATIVE_AGORA.md) — **use this with Cursor** in the live app. §0 is a copy-paste prompt; §1 lists exactly what to change; §8 requires **arranged** filter settings (Auto → Beauty → Enhance → Face → Effects tabs), not a random chip list.
+- **All stacks:** [docs/PLATFORMS.md](docs/PLATFORMS.md)
+
+### Server deploy
+
+```bash
+cd ~/wave-lens && npm run deploy   # pull → backend migrate/build/seed → dashboard build → pm2 restart
+```
 
 ## Roadmap (phases)
 

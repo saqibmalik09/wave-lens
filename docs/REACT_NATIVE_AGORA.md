@@ -1,11 +1,79 @@
 # Wave Lens + React Native + Agora — Integration Guide
 
-> **Audience:** Developer implementing live streaming in a React Native app using **Agora RTC** (host + audience).  
-> **Cursor use:** Open this file in chat (`@docs/REACT_NATIVE_AGORA.md`) and ask the agent to implement phase-by-phase.
+> **Audience:** App developer (or Cursor agent) integrating Wave Lens into a React Native live-streaming app that uses **Agora RTC**.  
+> **How to use with Cursor:** Attach this file (`@docs/REACT_NATIVE_AGORA.md`) and paste the prompt in **§0**. Follow phases in order. Do **not** invent a random filter list — use the fixed category order and SDK APIs below.
+
+Also see: [PLATFORMS.md](./PLATFORMS.md) (all stacks) · [INTEGRATION.md](./INTEGRATION.md) (pure Android)
 
 ---
 
-## 1. What you are building
+## 0. Cursor prompt — copy this into the app chat
+
+```text
+Read @docs/REACT_NATIVE_AGORA.md carefully and implement Wave Lens for our React Native + Agora live host flow.
+
+RULES (do not break these):
+1. Do NOT invent filter names or show a flat random list of chips.
+2. Build settings EXACTLY in this category order:
+   Auto → Beauty → Enhance → Face → Effects
+3. UI must be: ONE "Filters" button on go-live → bottom sheet → category TABS → preset chips inside the active tab only.
+4. Presets MUST come from WaveLens.getPresetsByCategory() / availablePresets() after refreshLicense() — never hardcode the tray.
+5. On licenseUpdated / licenseStatus events, rebuild the tray and show the status message to the host.
+6. Call refreshLicense() every time the host opens go-live.
+7. Viewers do NOT run Wave Lens — only the host publishes filtered video.
+8. Replace android/app/libs/wavelens-release.aar with the latest AAR from wave-lens (see §4).
+9. Match our existing app design language; keep the filter sheet clean and arranged — no scattered toggles, no emoji spam, no unsorted grid.
+
+Implement Phase A → B → C → D → E from §10. After each phase, summarize what changed and what to test.
+```
+
+---
+
+## 1. What must change in the app (checklist)
+
+| # | Change | Where | Why |
+|---|--------|-------|-----|
+| 1 | **Replace AAR** with latest `wavelens-release.aar` | `android/app/libs/` | New engine: stronger filters, face AR, 2‑min license sync, status messages, server-driven configs |
+| 2 | **Gradle deps** — CameraX + ML Kit comes via AAR; keep Agora | `android/app/build.gradle` | Face AR + preview |
+| 3 | **Native module** — init, presets by category, applyPreset, setParam, status events | `android/.../wavelens/` | Bridge JS ↔ AAR |
+| 4 | **Agora frame filter** — publish *filtered* frames | Host go-live native path | Viewers must see the same look |
+| 5 | **Filter settings UI** — one button → sheet → **ordered category tabs** | Host live screen | Not a random chip row |
+| 6 | **refreshLicense()** on go-live open + listen for updates | Host screen | Studio changes appear without rebuild |
+| 7 | **Status toast/banner** when account off or filters updated | Host screen | Host must know why tray is empty |
+| 8 | **Do not** put Wave Lens on viewer screens | Audience flow | Host already sends filtered video |
+
+### What the host should see (arranged settings)
+
+```text
+Go-live screen
+└── [ Filters ]          ← single entry point (not 20 chips on the main UI)
+
+Tap Filters → bottom sheet (arranged):
+┌──────────────────────────────────────────────┐
+│  Auto │ Beauty │ Enhance │ Face │ Effects    │  ← tabs IN THIS ORDER only
+├──────────────────────────────────────────────┤
+│  [Smooth] [Natural] [Fair] [Rosy] [Glam]     │  ← chips for ACTIVE tab only
+│  Strength  ────●────                         │  ← optional slider for continuous params
+└──────────────────────────────────────────────┘
+```
+
+**Forbidden UI:** dumping all presets in one horizontal scroll with no categories; random order; inventing labels not returned by the SDK; mixing face AR chips into “Effects”.
+
+**Required category order (hard rule):**
+
+| Order | Tab key | Display label | Example presets (from SDK / Studio) |
+|------:|---------|---------------|-------------------------------------|
+| 1 | `auto` | Auto | Auto |
+| 2 | `beauty` | Beauty | Smooth, Natural, Fair, Rosy, Glam |
+| 3 | `enhance` | Enhance | HD Boost |
+| 4 | `face` | Face | Chasma, Hearts, Cat Ears, Funny Face |
+| 5 | `effects` | Effects | Original, B&W, Vintage, Sepia, Warm, Cool, Glow, Film Warm, Film Cool |
+
+Hide a tab if that category array is empty (tenant not entitled). Default selected tab: **Beauty** (or first non-empty).
+
+---
+
+## 2. What you are building
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -29,34 +97,32 @@
 
 ---
 
-## 2. Current SDK status (read before coding)
+## 3. Current SDK status (read before coding)
 
 | Platform | Status |
 |----------|--------|
-| **Android AAR** | ✅ Ready (`wavelens-release.aar`) |
+| **Android AAR** | ✅ Ready (`wavelens-release.aar`) — rebuild from wave-lens repo |
 | **License API** | ✅ `https://api.wavelens.online` |
 | **Studio dashboard** | ✅ `https://studio.wavelens.online` |
 | **Official `@wavelens/react-native`** | 🔜 Phase 5 — not published yet |
 | **iOS** | 🔜 After Android |
 
-**Important:** Today you integrate via a **thin custom native module** on Android that wraps:
+**Important:** Integrate via a **thin custom native module** on Android that wraps:
 
-1. `WaveLens.init()` — license (fail-open, cached)
-2. `NativeBridge` / engine — GPU filter on camera frames
-3. `react-native-agora` — publish filtered frames to the channel
+1. `WaveLens.init()` — license (fail-open, cached; refresh every **2 minutes**)
+2. Engine / `applyPreset` — GPU filters + face AR
+3. `react-native-agora` — publish filtered frames
 
-Filter logic never lives in JavaScript — JS only calls init / preset / param APIs.
+Filter logic never lives in JavaScript — JS only calls init / preset / param / category APIs.
 
 ---
 
-## 3. Studio setup (do this first)
+## 4. Studio + credentials (do this first)
 
 1. Register at [https://studio.wavelens.online/register](https://studio.wavelens.online/register)
-2. Save **Client ID**, **Client Secret**, **Bundle ID** (shown once on signup)
-3. In **Dashboard → Filters**, enable the filters your hosts should see
-4. Admin can entitle more filters per tenant at **Admin → Companies → Manage**
-
-You will pass credentials into the app (use env / secure storage — never commit secrets):
+2. Save **Client ID**, **Client Secret**, **Bundle ID**
+3. **Dashboard → Filters** — enable only what hosts should see (grouped by category in Studio)
+4. Admin can entitle companies at **Admin → Companies**
 
 ```env
 WAVELENS_CLIENT_ID=wl_xxxxxxxx
@@ -65,25 +131,32 @@ WAVELENS_BUNDLE_ID=com.yourcompany.liveapp
 WAVELENS_API_URL=https://api.wavelens.online
 ```
 
-License check (automatic in SDK):
+License response (v0.3+):
 
 ```http
 GET /v1/license/status?client_id=...&client_secret=...&bundle_id=...
-→ { "active": true, "filters": ["bw", "vintage", "glow", ...] }
+→ {
+    "active": true,
+    "filters": ["auto", "beauty_smooth", "sunglasses", ...],
+    "filter_configs": [ { "id", "name", "category", "lut?", "auto?", "sticker?", "params?" }, ... ],
+    "message": "..."   // when inactive
+  }
 ```
+
+The SDK builds the tray from `filter_configs` when present. **Do not hardcode presets in JS.**
 
 ---
 
-## 4. Dependencies
+## 5. Dependencies & AAR
 
-### 4.1 React Native (JS)
+### 5.1 React Native
 
 ```bash
 npm install react-native-agora
-# Wave Lens RN wrapper — use local native module until @wavelens/react-native ships
+# Wave Lens RN wrapper = your local native module until @wavelens/react-native ships
 ```
 
-### 4.2 Android (`android/app/build.gradle`)
+### 5.2 Android (`android/app/build.gradle`)
 
 ```gradle
 dependencies {
@@ -91,42 +164,38 @@ dependencies {
     implementation 'androidx.camera:camera-core:1.3.4'
     implementation 'androidx.camera:camera-camera2:1.3.4'
     implementation 'androidx.camera:camera-lifecycle:1.3.4'
-    implementation 'io.agora.rtc:full-sdk:4.x.x'  // match your react-native-agora version
+    implementation 'io.agora.rtc:full-sdk:4.x.x'  // match react-native-agora
 }
 ```
-
-Copy AAR:
 
 ```text
 android/app/libs/wavelens-release.aar
 ```
 
-Build AAR from Wave Lens repo:
+Build the AAR from the Wave Lens repo (required for current features):
 
 ```bash
 cd wave-lens/android && ./gradlew :wavelens:assembleRelease
 # → android/wavelens/build/outputs/aar/wavelens-release.aar
+# Copy into the live app, then rebuild the app once.
 ```
 
 Requirements: **minSdk 24**, **OpenGL ES 3.0**, arm64-v8a / armeabi-v7a.
 
 ---
 
-## 5. Target architecture (Android native + RN bridge)
-
-Create a native module package, e.g. `WaveLensAgoraPackage`:
+## 6. Native architecture
 
 ```text
 android/app/src/main/java/com/yourapp/wavelens/
-  WaveLensModule.kt          # RN bridge: init, presets, setParam
+  WaveLensModule.kt          # RN bridge: init, getPresetsByCategory, applyPreset, setParam, events
   WaveLensAgoraPublisher.kt  # Agora + filter pipeline (host only)
   WaveLensPackage.kt
 ```
 
-### 5.1 Initialize once (Application or first screen)
+### 6.1 Init (once)
 
 ```kotlin
-// WaveLensModule.kt
 WaveLens.init(
     context = reactContext.applicationContext,
     clientId = BuildConfig.WAVELENS_CLIENT_ID,
@@ -135,382 +204,285 @@ WaveLens.init(
 )
 ```
 
-Call from JS on app start:
-
 ```typescript
-import { NativeModules } from 'react-native';
-const { WaveLens } = NativeModules;
-
-await WaveLens.init(); // reads BuildConfig on native side
+await WaveLens.init();
+await WaveLens.refreshLicense(); // every go-live open
 ```
 
-Refresh before going live:
+### 6.2 Build tray from SDK (arranged)
 
 ```kotlin
-WaveLens.refreshLicense()
+// Prefer category map — preserves Auto → Beauty → Enhance → Face → Effects
+val groups = WaveLens.presetsByCategory()
 ```
 
-Build filter tray from license:
-
-```kotlin
-val presets = WaveLens.availablePresets() // entitled ∩ enabled, fail-open offline
-```
+Bridge to JS as `getPresetsByCategory()`. In JS, iterate categories with a **fixed order array** (see §8), not `Object.keys()` alone (key order can look random).
 
 ---
 
-## 6. Agora host pipeline (the critical part)
+## 7. Agora host pipeline (critical)
 
-Agora must publish **filtered** frames, not a second unfiltered camera.
+Agora must publish **filtered** frames, not raw camera.
 
-### Recommended approach: `IVideoFrameObserver` on capture path
-
-Register an observer on the Agora engine **before** joining as broadcaster. In the capture callback, run the frame through Wave Lens GPU engine, then return the modified frame.
+### Recommended: `IVideoFrameObserver`
 
 ```kotlin
-// WaveLensAgoraPublisher.kt — conceptual; adapt to your Agora 4.x API
 class WaveLensAgoraPublisher(private val engine: RtcEngine) {
-
     private val engineHandle = NativeBridge.nativeCreate()
 
     fun attachFilterPipeline() {
         engine.registerVideoFrameObserver(object : IVideoFrameObserver {
-            override fun onCaptureVideoFrame(
-                sourceType: Int,
-                videoFrame: VideoFrame,
-            ): Boolean {
-                // videoFrame.textureId = camera OES texture (GL thread)
-                // videoFrame.transform = 4x4 matrix
-                NativeBridge.nativeDraw(
-                    engineHandle,
-                    videoFrame.textureId,
-                    videoFrame.transform,
-                )
-                // Agora sends the modified texture to the channel
+            override fun onCaptureVideoFrame(sourceType: Int, videoFrame: VideoFrame): Boolean {
+                NativeBridge.nativeDraw(engineHandle, videoFrame.textureId, videoFrame.transform)
                 return true
             }
-            // implement other observer methods as no-op / pass-through
         })
     }
 
     fun applyPreset(presetId: String) {
-        // Look up the FilterPreset by id, then set ALL its params + LUT + auto mode
-        // (mirrors WaveLensView.applyPreset — presets carry params, not just a LUT).
-        val preset = FilterPreset.ALL.firstOrNull { it.id == presetId } ?: return
+        val preset = WaveLens.availablePresets().firstOrNull { it.id == presetId }
+            ?: FilterPreset.ALL.firstOrNull { it.id == presetId }
+            ?: return
         for (param in FilterParam.values()) {
             NativeBridge.nativeSetParam(engineHandle, param.id, preset.params[param] ?: 0f)
         }
         NativeBridge.nativeSetPresetLut(engineHandle, preset.lut ?: "")
         NativeBridge.nativeSetAutoEnabled(engineHandle, preset.autoMode)
+        // Face presets: also set sticker via WaveLensView path or nativeSetSticker if exposed
     }
 
-    fun setParam(param: Int, value: Float) {
-        NativeBridge.nativeSetParam(engineHandle, param, value)
-    }
-
-    fun destroy() {
-        NativeBridge.nativeDestroy(engineHandle)
-    }
+    fun destroy() { NativeBridge.nativeDestroy(engineHandle) }
 }
 ```
 
-> **Note:** `NativeBridge` is currently `internal` in the AAR. For production Agora integration, Wave Lens will expose a public `WaveLensProcessor` API. Until then, either:
-> - Request a build with public processor API from Wave Lens team, or
-> - Fork and expose `NativeBridge` in your vendored AAR.
-
-### Alternative: Custom video source
-
-1. `WaveLensView` renders filtered preview (CameraX → GL).
-2. Read GL output into `AgoraVideoFrame` and `pushExternalVideoFrame`.
-
-Higher latency and more CPU/GPU sync work — use only if frame observer is unavailable.
+> `NativeBridge` may be `internal` in the AAR — expose a public processor API or vendor a build that exports it.
 
 ---
 
-## 7. React Native layer — suggested file layout
+## 8. Filter settings UI — arranged, not random
+
+### 8.1 File layout
 
 ```text
-src/
-  live/
-    HostLiveScreen.tsx       # host: preview + go live + filter tray
-    ViewerLiveScreen.tsx     # audience: remote video only
-    FilterTray.tsx           # horizontal preset chips
-  native/
-    waveLens.ts              # typed wrapper over NativeModules
-  config/
-    wavelens.ts              # env / constants
+src/live/
+  HostLiveScreen.tsx
+  ViewerLiveScreen.tsx
+  FilterSettingsSheet.tsx   # one button → sheet → tabs → chips
+src/native/waveLens.ts
+src/config/wavelens.ts
 ```
 
-### 7.1 Native module surface (implement in Kotlin, call from TS)
+### 8.2 Native module surface
 
 ```typescript
 // src/native/waveLens.ts
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
-type Preset = { id: string; name: string; category: string };
+export type Preset = { id: string; name: string; category: string };
+
+/** Fixed tab order — NEVER sort alphabetically or by Object.keys alone. */
+export const FILTER_CATEGORY_ORDER = [
+  'auto',
+  'beauty',
+  'enhance',
+  'face',
+  'effects',
+] as const;
+
+export const FILTER_CATEGORY_LABELS: Record<string, string> = {
+  auto: 'Auto',
+  beauty: 'Beauty',
+  enhance: 'Enhance',
+  face: 'Face',
+  effects: 'Effects',
+};
 
 interface WaveLensNative {
   init(): Promise<void>;
   refreshLicense(): Promise<void>;
   getAvailablePresets(): Promise<Preset[]>;
-  getPresetsByCategory(): Promise<Record<string, Preset[]>>; // auto/beauty/enhance/effects
+  getPresetsByCategory(): Promise<Record<string, Preset[]>>;
   applyPreset(presetId: string): Promise<void>;
-  setParam(param: string, value: number): Promise<void>; // brightness -1..1
-  // Host only — wire to Agora publisher
+  setParam(param: string, value: number): Promise<void>;
   attachToAgoraEngine(): Promise<void>;
   detachFromAgoraEngine(): Promise<void>;
 }
 
 export const WaveLens = NativeModules.WaveLens as WaveLensNative;
 export const waveLensEvents = new NativeEventEmitter(NativeModules.WaveLens);
-// Event: 'licenseUpdated' → { active: boolean; filters: string[] }
+// 'licenseUpdated' → { active, filters }
+// 'licenseStatus'  → { active, message }  // deactivated / filters updated
 ```
 
-### 7.2 Host screen flow
+### 8.3 Category → presets (what each tab contains)
 
-```typescript
-// HostLiveScreen.tsx — pseudocode
-import { useEffect, useState } from 'react';
-import { Platform, View } from 'react-native';
-import RtcEngine, { ChannelProfile, ClientRole } from 'react-native-agora';
-import { WaveLens } from '../native/waveLens';
-import { FilterTray } from './FilterTray';
+| Category | Preset ids | Behavior |
+|----------|------------|----------|
+| **Auto** | `auto` | Live auto exposure / contrast / white balance (+ low-light denoise in dark scenes) |
+| **Beauty** | `beauty_smooth`, `beauty_natural`, `beauty_fair`, `beauty_rosy`, `beauty_glam` | Skin smoothing + tone |
+| **Enhance** | `enhance` | HD Boost — weak/low-light cameras |
+| **Face** | `sunglasses` (Chasma), `heart_glasses`, `cat_ears`, `face_warp` | Face AR — only while face detected; “Find A face” for 2 s if none |
+| **Effects** | `original`, `bw`, `vintage`, `sepia`, `warm`, `cool`, `glow`, `film_warm`, `film_cool` | Strong color looks |
 
-export function HostLiveScreen({ channelId, token, uid }) {
-  const [presets, setPresets] = useState([]);
+### 8.4 FilterSettingsSheet — required behavior for Cursor
 
-  useEffect(() => {
-    (async () => {
-      await WaveLens.init();
-      await WaveLens.refreshLicense();
-      setPresets(await WaveLens.getAvailablePresets());
-
-      const engine = await RtcEngine.create(AGORA_APP_ID);
-      await engine.enableVideo();
-      await engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-      await engine.setClientRole(ClientRole.Broadcaster);
-
-      if (Platform.OS === 'android') {
-        await WaveLens.attachToAgoraEngine(); // native: register frame observer
-      }
-
-      await engine.joinChannel(token, channelId, null, uid);
-    })();
-  }, []);
-
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Local preview — RtcSurfaceView LOCAL or WaveLensView native component */}
-      <RtcLocalView style={{ flex: 1 }} />
-      <FilterTray
-        presets={presets}
-        onSelect={(id) => WaveLens.applyPreset(id)}
-      />
-    </View>
-  );
-}
-```
-
-### 7.3 Viewer screen (no Wave Lens)
-
-```typescript
-// ViewerLiveScreen.tsx
-await engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-await engine.setClientRole(ClientRole.Audience);
-await engine.joinChannel(token, channelId, null, uid);
-// RtcRemoteView for host uid — receives already-filtered video from Agora
-```
-
----
-
-## 8. Filter tray (JS UI) — categories + single-button design
-
-Presets are **grouped by category**. Native side exposes `WaveLens.presetsByCategory()`;
-bridge it as `getPresetsByCategory(): Promise<Record<string, Preset[]>>`.
-
-| Category | Preset ids | What it does |
-|----------|-----------|--------------|
-| **Auto** | `auto` | Live analysis of camera + lighting: auto exposure, auto contrast, auto white balance. Re-analyzes ~2x/sec, smoothly adapts. |
-| **Beauty** | `beauty_smooth`, `beauty_natural`, `beauty_fair`, `beauty_rosy`, `beauty_glam` | GPU skin smoothing (edge-preserving — eyes/lips stay sharp) + brightness/tone looks. `beauty_natural` also runs auto mode. |
-| **Enhance** | `enhance` (HD Boost) | For weak/low-light cameras: auto light correction + strong sharpening + color pop. |
-| **Effects** | `original`, `bw`, `vintage`, `sepia`, `warm`, `cool`, `glow`, `film_warm`, `film_cool` | Strong color looks (LUT-based, boosted in v0.2). |
-| **Face** | `sunglasses` (Chasma), `heart_glasses`, `cat_ears`, `face_warp` (Funny Face) | **Live face AR** — ML Kit tracks the face at runtime; stickers stick to the eyes/head through movement and tilt, `face_warp` slightly bulges the face. Effects render **only while a face is detected**; a "Find face" hint shows otherwise. `bunny_ears`, `dog_ears`, `crown` come in the next sticker pack. |
-
-### Recommended UI — one button, expanding sheet
-
-```text
-[ ✨ Filters ]  ← single button on the go-live screen
-     │ tap
-     ▼
-┌────────────────────────────────────────────┐
-│  Auto │ Beauty │ Enhance │ Effects │ Face  │   ← category tabs
-├────────────────────────────────────────────┤
-│  (○) (○) (○) (○) (○)  ← preset chips      │   ← horizontal scroll
-│  ────────●────────    ← strength slider    │
-└────────────────────────────────────────────┘
-```
-
-```typescript
-// FilterTray.tsx — sketch
+```tsx
+// FilterSettingsSheet.tsx — arrangement contract
 const [open, setOpen] = useState(false);
 const [groups, setGroups] = useState<Record<string, Preset[]>>({});
-const [tab, setTab] = useState('beauty');
+const [tab, setTab] = useState<string>('beauty');
+const [selectedId, setSelectedId] = useState<string>('original');
+const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
-useEffect(() => { WaveLens.getPresetsByCategory().then(setGroups); }, []);
+async function reloadTray() {
+  const g = await WaveLens.getPresetsByCategory();
+  setGroups(g);
+  // Keep tab order fixed; pick first non-empty if current tab empty
+  const first = FILTER_CATEGORY_ORDER.find((k) => (g[k]?.length ?? 0) > 0);
+  if (first && !(g[tab]?.length)) setTab(first);
+}
 
-// Single button → bottom sheet with category tabs → chips call applyPreset(id).
-// Hide the "face" tab if groups.face is empty (tenant not entitled).
+useEffect(() => {
+  reloadTray();
+  const u1 = waveLensEvents.addListener('licenseUpdated', reloadTray);
+  const u2 = waveLensEvents.addListener('licenseStatus', (e) => {
+    setStatusMsg(e.message);
+    // Show toast/banner to host — do not ignore
+  });
+  return () => { u1.remove(); u2.remove(); };
+}, []);
+
+// Render:
+// 1. Floating / bottom "Filters" button on HostLiveScreen only when sheet closed
+// 2. Sheet: horizontal Tabs = FILTER_CATEGORY_ORDER.filter(k => groups[k]?.length)
+// 3. Body: ONLY groups[tab] as chips (selected state on selectedId)
+// 4. onPress chip → WaveLens.applyPreset(id); setSelectedId(id)
+// 5. Optional: one strength slider for brightness/smoothing when that tab needs it
 ```
 
-### Face AR behavior (built into the SDK)
+**Do not:** show all categories’ chips at once; use `Object.keys(groups).sort()`; hardcode chip lists in JSX.
 
-- Selecting a face preset starts **on-device ML Kit face detection** (FAST mode,
-  low-res analysis stream, ≤1 frame in flight — negligible load, nothing runs when
-  no face preset is selected).
-- The sticker/deform **appears only when a face is detected**, fades in/out smoothly,
-  and follows position, tilt and distance in real time.
-- When a face effect is selected with no face visible, a built-in **"Find A face"**
-  hint shows for **2 seconds** and disappears; it re-appears briefly if the face
-  stays lost (customize the text via `waveLensView.faceHintText = "..."`).
-- **Agora frame-observer path:** the built-in tracking uses the `WaveLensView`
-  CameraX pipeline. If you capture through Agora instead, run ML Kit on every 2nd–3rd
-  observer frame (`InputImage.fromByteArray` with the NV21 buffer) and forward results
-  via `NativeBridge.nativeSetFaceState(...)` — the engine API is identical.
+### 8.5 Host screen
 
-Sliders (continuous params):
+```typescript
+useEffect(() => {
+  (async () => {
+    await WaveLens.init();
+    await WaveLens.refreshLicense(); // required on every go-live open
+    // create Agora engine, broadcaster role, attachToAgoraEngine, joinChannel
+  })();
+}, []);
+```
+
+Viewer screen: audience role only — **no** FilterSettingsSheet, **no** Wave Lens.
+
+### 8.6 Continuous params (optional slider row)
 
 ```typescript
 await WaveLens.setParam('brightness', 0.2);   // -1 .. 1
 await WaveLens.setParam('contrast', 0.1);
 await WaveLens.setParam('saturation', -0.1);
-await WaveLens.setParam('temperature', 0.3);  // warm/cool
-await WaveLens.setParam('smoothing', 0.7);    // 0..1 — beauty skin smoothing
-await WaveLens.setParam('sharpen', 0.5);      // 0..1 — detail boost for soft cameras
+await WaveLens.setParam('temperature', 0.3);
+await WaveLens.setParam('smoothing', 0.7);    // 0..1
+await WaveLens.setParam('sharpen', 0.5);      // 0..1
 ```
-
-Only show presets returned by the SDK — it already respects Studio entitlements.
 
 ---
 
-## 8b. Dynamic updates — no app rebuild needed
+## 9. Dynamic updates (no rebuild for Studio changes)
 
-**Question: "If we change filters in the backend, do we rebuild the app?" → No.**
+After the **new AAR** is in the app once:
 
-Since backend v0.3 the license response includes **`filter_configs`** — the full
-definition of every enabled filter (params, LUT, sticker, auto flag). The SDK builds
-its tray from this, so even **adding a brand-new filter** in the backend (any
-combination of existing params/LUTs/stickers) appears in already-installed apps at
-the next refresh. Only new engine *capabilities* (new shader math, new sticker
-artwork) need an SDK/app update — and old apps skip those safely instead of breaking.
-
-Changes propagate to installed apps automatically:
-
-1. **App start** — SDK checks the license (non-blocking, cached fail-open).
-2. **Every 2 minutes** — background refresh while the app is alive.
-3. **Instantly on demand** — call `WaveLens.refreshLicense()` when the host opens
-   the go-live screen; then rebuild the tray from the `licenseUpdated` event:
+| Studio / backend change | App behavior |
+|-------------------------|--------------|
+| Enable/disable filters | Tray rebuilds within ~2 min or on `refreshLicense()` |
+| New filter from existing params/LUTs/stickers | Appears in correct category tab |
+| Deactivate company | Host gets status message; filters off |
+| New shader / new sticker artwork | Needs new AAR + app build |
 
 ```typescript
 waveLensEvents.addListener('licenseUpdated', async () => {
   setGroups(await WaveLens.getPresetsByCategory());
 });
+waveLensEvents.addListener('licenseStatus', ({ message }) => {
+  // Toast / banner: "Wave Lens filters are turned off…" / "Filters updated…"
+});
 ```
-
-So: add or toggle a filter in the backend → within ~2 minutes (or the next go-live
-tap) every host's tray updates. Deactivating a company kills its filters the same way.
-
-**Built-in host messages:** the SDK tells the host what happened, automatically —
-`WaveLensView` shows a top banner when the account is deactivated ("Wave Lens filters
-are turned off for this account…", stays until reactivated), reactivated, or the
-filter lineup changes ("Filters updated — your tray has changed", auto-hides in 5 s).
-To render these in your own RN UI instead, bridge `WaveLens.addStatusListener` as a
-`licenseStatus` event: `{ active: boolean; message: string }`.
-
-Same behavior on **all stacks** (native Android, React Native, later Flutter/iOS) —
-see [PLATFORMS.md](./PLATFORMS.md) for the side-by-side matrix.
 
 ---
 
-## 9. Lifecycle & performance checklist
+## 10. Lifecycle
 
 | When | Action |
 |------|--------|
-| App start | `WaveLens.init()` — non-blocking, uses cache |
-| Before go live | `WaveLens.refreshLicense()` |
-| Host joins channel | `attachToAgoraEngine()` then `joinChannel` |
+| App start | `WaveLens.init()` |
+| Open go-live | `refreshLicense()` + rebuild category tray |
+| Host joins | `attachToAgoraEngine()` then `joinChannel` |
 | Host leaves | `leaveChannel`, `detachFromAgoraEngine()` |
-| App background | Pause camera / Agora per Agora docs |
-| Filter change | In-memory GPU uniform swap — no network |
-
-- All filtering is **GPU (OpenGL ES 3.0)** — no CPU pixel loops (beauty smoothing and
-  sharpening included; they share one 8-tap neighborhood read in the main pass).
-- Viewers do not run Wave Lens — they receive encoded video from Agora.
-- License JSON ~1–2 KB; refresh every 2 minutes in background + on `refreshLicense()`.
+| Filter tap | `applyPreset(id)` only — GPU swap, no network |
 
 ---
 
-## 10. Implementation phases for Cursor
+## 11. Implementation phases for Cursor (do in order)
 
-Copy each phase into Cursor as a task:
+### Phase A — AAR, config, license
+- [ ] Copy latest `wavelens-release.aar` → `android/app/libs/`
+- [ ] Gradle deps + `WAVELENS_*` BuildConfig fields
+- [ ] `WaveLensModule.init` / `refreshLicense` / `getPresetsByCategory`
+- [ ] Emit `licenseUpdated` + `licenseStatus` to JS
+- [ ] Test: presets return with `category` fields; empty tray if tenant inactive
 
-### Phase A — Config & license
-- [ ] Add `wavelens-release.aar` to `android/app/libs/`
-- [ ] Add Gradle deps (CameraX + AAR)
-- [ ] Add `WAVELENS_*` to `android/app/build.gradle` `buildConfigField`
-- [ ] Create `WaveLensModule.init()` RN method
-- [ ] Test: init + `getAvailablePresets()` returns filters from Studio
-
-### Phase B — Host preview (no Agora yet)
-- [ ] Add native `WaveLensView` component OR Agora local view
-- [ ] `FilterTray` toggles `applyPreset`
-- [ ] Listen for `licenseUpdated` event → rebuild tray
+### Phase B — Arranged Filter settings UI (no Agora yet)
+- [ ] One **Filters** button on host preview
+- [ ] Bottom sheet with tabs in order: Auto → Beauty → Enhance → Face → Effects
+- [ ] Chips only for active tab; selection highlight; `applyPreset`
+- [ ] Status banner/toast for deactivate / filters updated
+- [ ] Rebuild tray on `licenseUpdated`
 
 ### Phase C — Agora publish (Android)
-- [ ] Integrate `react-native-agora` host flow (broadcaster role)
-- [ ] Native: `WaveLensAgoraPublisher.attachFilterPipeline()` on Agora engine
-- [ ] Verify viewers see **filtered** video on a second device
+- [ ] Broadcaster role + `attachToAgoraEngine` / frame observer
+- [ ] Verify second device sees **filtered** video
 
-### Phase D — Viewer screen
-- [ ] Audience role, remote video view, no Wave Lens imports
+### Phase D — Viewer
+- [ ] Audience only; no Wave Lens UI
 
 ### Phase E — Polish
-- [ ] Error states: license inactive → block go-live with message
-- [ ] Secure secret storage (Android Keystore / env)
-- [ ] iOS stub (wait for Wave Lens iOS XCFramework)
+- [ ] Inactive license → clear message, block or hide Filters
+- [ ] Secrets not in git
+- [ ] Match app design system (clean sheet, no clutter)
 
 ---
 
-## 11. Troubleshooting
+## 12. Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| Filters only on preview, not on stream | Agora is publishing raw camera — implement §6 frame observer |
-| Empty filter tray | Run seed / enable filters in Studio; call `refreshLicense()` |
-| `active: false` | Tenant deactivated in Admin → Companies |
-| SSL / network errors | Use `https://api.wavelens.online`; check device network |
-| RN "Cannot POST /v1/auth/login" | Dashboard issue — ensure `NEXT_PUBLIC_API_URL` points to API, not Studio |
-| Build: Prisma / native errors on Windows | Build backend on Linux server; Android AAR builds in Android Studio |
+| Filters look random / one long chip row | Rebuild UI per §1 and §8 — use `FILTER_CATEGORY_ORDER` |
+| Filters only on preview, not stream | Frame observer not attached (§7) |
+| Empty tray | Studio entitlements; `refreshLicense()`; check `active` |
+| Face effects never appear | New AAR required; face tab empty until entitled; need a face in camera |
+| Old weak effects | Old AAR — rebuild and replace AAR (§5.2) |
+| Studio changes never show | Call `refreshLicense` on go-live; listen to `licenseUpdated` |
 
 ---
 
-## 12. Reference — pure Android (without RN)
-
-If you need a working reference before RN bridge:
+## 13. Pure Android reference
 
 ```kotlin
 WaveLens.init(context, clientId, clientSecret, "https://api.wavelens.online")
 waveLensView.startCamera(lifecycleOwner)
-waveLensView.applyPreset(FilterPreset.VINTAGE)
-val presets = WaveLens.availablePresets()
+waveLensView.applyPreset(FilterPreset.BEAUTY_SMOOTH)
+val groups = WaveLens.presetsByCategory() // arranged categories
 ```
 
-See [`docs/INTEGRATION.md`](./INTEGRATION.md) and `android/demo/`.
+See [`INTEGRATION.md`](./INTEGRATION.md) and `android/demo/`.
 
 ---
 
-## 13. Support
+## 14. Support
 
-- **Studio:** [https://studio.wavelens.online](https://studio.wavelens.online)
-- **WhatsApp:** +92 325 226 5427
-- **Email:** supportwavetech@gmail.online
+- **Studio:** https://studio.wavelens.online  
+- **WhatsApp:** +92 325 226 5427  
+- **Email:** supportwavetech@gmail.online  
 
-When asking Wave Lens team for Agora help, specify: **React Native**, **Agora RTC 4.x**, **host-only filtering**, **Android first**.
+When asking Wave Lens for help, specify: **React Native**, **Agora RTC 4.x**, **host-only filtering**, **Android first**, and whether the tray is category-tabbed per this doc.
