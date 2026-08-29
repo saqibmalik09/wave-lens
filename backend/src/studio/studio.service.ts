@@ -1,5 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
+import { TenantsService } from '../tenants/tenants.service';
 import type { AuthUser } from '../auth/auth.service';
 
 @Injectable()
@@ -76,5 +78,19 @@ export class StudioService {
     ]);
 
     return { enabledIds: unique };
+  }
+
+  async regenerateSecret(user: AuthUser) {
+    const tenantId = this.tenantIdFor(user);
+    const tenant = await this.prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!tenant) throw new NotFoundException('Tenant not found');
+
+    const clientSecret = randomBytes(24).toString('base64url');
+    await this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: { clientSecretHash: TenantsService.hashSecret(clientSecret) },
+    });
+
+    return { clientId: tenant.clientId, clientSecret, bundleId: tenant.bundleId };
   }
 }

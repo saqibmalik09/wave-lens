@@ -1,20 +1,23 @@
 1:"$Sreact.fragment"
-2:I[6924,["909","static/chunks/909-a5da60d248a1c133.js","177","static/chunks/app/layout-b65a14f92374c06b.js"],"AuthProvider"]
+2:I[6924,["909","static/chunks/909-a5da60d248a1c133.js","177","static/chunks/app/layout-daa4c96db6a61407.js"],"AuthProvider"]
 3:I[9766,[],""]
 4:I[8924,[],""]
-5:I[1959,[],"ClientPageRoot"]
-6:I[5124,["909","static/chunks/909-a5da60d248a1c133.js","710","static/chunks/710-f35d952671a5c4be.js","698","static/chunks/app/admin/page-ff17f01fe41ce361.js"],"default"]
-9:I[4431,[],"OutletBoundary"]
-b:I[5278,[],"AsyncMetadataOutlet"]
-d:I[4431,[],"ViewportBoundary"]
-f:I[4431,[],"MetadataBoundary"]
-10:"$Sreact.suspense"
-12:I[7150,[],""]
-:HL["/_next/static/css/142838c22e7e7758.css","style"]
-0:{"P":null,"b":"EmwmQywCijcDlqiEzDHo5","p":"","c":["","admin"],"i":false,"f":[[["",{"children":["admin",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/142838c22e7e7758.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]}]]}],{"children":["admin",["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L5",null,{"Component":"$6","searchParams":{},"params":{},"promises":["$@7","$@8"]}],null,["$","$L9",null,{"children":["$La",["$","$Lb",null,{"promise":"$@c"}]]}]]}],{},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$Ld",null,{"children":"$Le"}],null],["$","$Lf",null,{"children":["$","div",null,{"hidden":true,"children":["$","$10",null,{"fallback":null,"children":"$L11"}]}]}]]}],false]],"m":"$undefined","G":["$12",[]],"s":false,"S":true}
-7:{}
-8:"$0:f:0:1:2:children:2:children:1:props:children:0:props:params"
-e:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
-a:null
-c:{"metadata":[["$","title","0",{"children":"Wave Lens Studio"}],["$","meta","1",{"name":"description","content":"Manage your Wave Lens SDK license, filters, and integration keys."}]],"error":null,"digest":"$undefined"}
-11:"$c:metadata"
+5:I[7989,[],"ClientSegmentRoot"]
+6:I[9208,["909","static/chunks/909-a5da60d248a1c133.js","710","static/chunks/710-37a2f5ce233d7c16.js","232","static/chunks/232-fa78b9785686c825.js","581","static/chunks/app/admin/layout-59513537ccceebd8.js"],"default"]
+8:I[1959,[],"ClientPageRoot"]
+9:I[3448,["909","static/chunks/909-a5da60d248a1c133.js","710","static/chunks/710-37a2f5ce233d7c16.js","232","static/chunks/232-fa78b9785686c825.js","698","static/chunks/app/admin/page-ed59f00aa2be66ed.js"],"default"]
+c:I[4431,[],"OutletBoundary"]
+e:I[5278,[],"AsyncMetadataOutlet"]
+10:I[4431,[],"ViewportBoundary"]
+12:I[4431,[],"MetadataBoundary"]
+13:"$Sreact.suspense"
+15:I[7150,[],""]
+:HL["/_next/static/css/bf09ebf37b13f95f.css","style"]
+0:{"P":null,"b":"pvcplTLmXIB5uNrbXOUV7","p":"","c":["","admin"],"i":false,"f":[[["",{"children":["admin",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/bf09ebf37b13f95f.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":["$","$L2",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]}]}]]}],{"children":["admin",["$","$1","c",{"children":[null,["$","$L5",null,{"Component":"$6","slots":{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]},"params":{},"promise":"$@7"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L8",null,{"Component":"$9","searchParams":{},"params":"$0:f:0:1:2:children:1:props:children:1:props:params","promises":["$@a","$@b"]}],null,["$","$Lc",null,{"children":["$Ld",["$","$Le",null,{"promise":"$@f"}]]}]]}],{},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$L10",null,{"children":"$L11"}],null],["$","$L12",null,{"children":["$","div",null,{"hidden":true,"children":["$","$13",null,{"fallback":null,"children":"$L14"}]}]}]]}],false]],"m":"$undefined","G":["$15",[]],"s":false,"S":true}
+7:"$0:f:0:1:2:children:1:props:children:1:props:params"
+a:{}
+b:"$0:f:0:1:2:children:1:props:children:1:props:params"
+11:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+d:null
+f:{"metadata":[["$","title","0",{"children":"Wave Lens Studio"}],["$","meta","1",{"name":"description","content":"Manage your Wave Lens SDK license, filters, and integration keys."}]],"error":null,"digest":"$undefined"}
+14:"$f:metadata"

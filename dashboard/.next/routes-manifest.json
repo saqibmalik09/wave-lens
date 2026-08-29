@@ -48,10 +48,34 @@
       "namedRegex": "^/admin(?:/)?$"
     },
     {
+      "page": "/admin/filters",
+      "regex": "^/admin/filters(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/filters(?:/)?$"
+    },
+    {
+      "page": "/admin/settings",
+      "regex": "^/admin/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/settings(?:/)?$"
+    },
+    {
       "page": "/dashboard",
       "regex": "^/dashboard(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/dashboard(?:/)?$"
+    },
+    {
+      "page": "/dashboard/filters",
+      "regex": "^/dashboard/filters(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/filters(?:/)?$"
+    },
+    {
+      "page": "/dashboard/settings",
+      "regex": "^/dashboard/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/settings(?:/)?$"
     },
     {
       "page": "/login",

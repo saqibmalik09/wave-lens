@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '../auth/jwt-auth.guard';
 import type { AuthUser } from '../auth/auth.service';
@@ -19,5 +19,10 @@ export class StudioController {
   @Put('filters/enabled')
   setEnabled(@CurrentUser() user: AuthUser, @Body() body: SetEnabledDto) {
     return this.studio.setEnabledFilters(user, body.filterIds ?? []);
+  }
+
+  @Post('regenerate-secret')
+  regenerateSecret(@CurrentUser() user: AuthUser) {
+    return this.studio.regenerateSecret(user);
   }
 }

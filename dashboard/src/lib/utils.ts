@@ -25,6 +25,13 @@ export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000
 
 export type UserRole = 'ADMIN' | 'TENANT';
 
+export interface FilterItem {
+  id: string;
+  name: string;
+  category: string;
+  type: string;
+}
+
 export interface AuthUser {
   id: number;
   email: string;

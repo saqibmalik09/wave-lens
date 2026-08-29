@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { TenantsService } from '../tenants/tenants.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ChangePasswordDto, UpdateProfileDto } from './dto/profile.dto';
 
 export interface JwtPayload {
   sub: number;
@@ -140,5 +141,25 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user || user.status !== 'active') throw new UnauthorizedException();
     return this.toAuthUser(user);
+  }
+
+  async updateProfile(userId: number, dto: UpdateProfileDto): Promise<AuthUser> {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { name: dto.name?.trim() || undefined },
+    });
+    return this.toAuthUser(user);
+  }
+
+  async changePassword(userId: number, dto: ChangePasswordDto): Promise<{ ok: true }> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException();
+
+    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!ok) throw new UnauthorizedException('Current password is incorrect');
+
+    const passwordHash = await bcrypt.hash(dto.newPassword, 12);
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+    return { ok: true };
   }
 }
