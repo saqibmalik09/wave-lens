@@ -78,4 +78,35 @@ Java_com_wavelens_sdk_internal_NativeBridge_nativeSetAutoEnabled(JNIEnv*, jobjec
     if (Engine* e = toEngine(handle)) e->setAutoEnabled(enabled == JNI_TRUE);
 }
 
+JNIEXPORT void JNICALL
+Java_com_wavelens_sdk_internal_NativeBridge_nativeSetFaceState(
+    JNIEnv*, jobject, jlong handle, jboolean detected, jfloat eyeLx, jfloat eyeLy, jfloat eyeRx,
+    jfloat eyeRy, jfloat upX, jfloat upY, jfloat centerX, jfloat centerY, jfloat radius) {
+    if (Engine* e = toEngine(handle)) {
+        e->setFaceState(detected == JNI_TRUE, eyeLx, eyeLy, eyeRx, eyeRy, upX, upY, centerX,
+                        centerY, radius);
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_wavelens_sdk_internal_NativeBridge_nativeSetSticker(JNIEnv* env, jobject, jlong handle,
+                                                             jbyteArray rgba, jint width,
+                                                             jint height, jfloat offsetEyeDists,
+                                                             jfloat spanEyeDists) {
+    Engine* e = toEngine(handle);
+    if (e == nullptr || rgba == nullptr) return;
+    jsize len = env->GetArrayLength(rgba);
+    if (len < width * height * 4) return;
+    jbyte* data = env->GetByteArrayElements(rgba, nullptr);
+    if (data == nullptr) return;
+    e->setSticker(reinterpret_cast<const uint8_t*>(data), width, height, offsetEyeDists,
+                  spanEyeDists);
+    env->ReleaseByteArrayElements(rgba, data, JNI_ABORT);
+}
+
+JNIEXPORT void JNICALL
+Java_com_wavelens_sdk_internal_NativeBridge_nativeClearSticker(JNIEnv*, jobject, jlong handle) {
+    if (Engine* e = toEngine(handle)) e->clearSticker();
+}
+
 }  // extern "C"

@@ -21,4 +21,13 @@ enum class FilterParam(val id: Int) {
 
     /** 0..1 — how strongly the current LUT look is applied. */
     LUT_INTENSITY(7),
+
+    /** 0..1 — edge-preserving skin smoothing (beauty). Keeps eyes/lips/hair crisp. */
+    SMOOTHING(8),
+
+    /** 0..1 — unsharp-mask detail boost. Rescues soft/low-quality cameras. */
+    SHARPEN(9),
+
+    /** 0..1 — slight face bulge (funny). Only visible while a face is tracked. */
+    FACE_DEFORM(10),
 }

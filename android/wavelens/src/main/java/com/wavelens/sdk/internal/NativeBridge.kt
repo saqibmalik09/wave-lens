@@ -20,4 +20,29 @@ internal object NativeBridge {
     external fun nativeSetPresetLut(handle: Long, name: String)
     external fun nativeLoadCubeLut(handle: Long, contents: String): Boolean
     external fun nativeSetAutoEnabled(handle: Long, enabled: Boolean)
+
+    external fun nativeSetFaceState(
+        handle: Long,
+        detected: Boolean,
+        eyeLx: Float,
+        eyeLy: Float,
+        eyeRx: Float,
+        eyeRy: Float,
+        upX: Float,
+        upY: Float,
+        centerX: Float,
+        centerY: Float,
+        radius: Float,
+    )
+
+    external fun nativeSetSticker(
+        handle: Long,
+        rgba: ByteArray,
+        width: Int,
+        height: Int,
+        offsetEyeDists: Float,
+        spanEyeDists: Float,
+    )
+
+    external fun nativeClearSticker(handle: Long)
 }

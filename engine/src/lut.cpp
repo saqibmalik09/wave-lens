@@ -26,44 +26,48 @@ Rgb transformIdentity(float r, float g, float b) { return {r, g, b}; }
 
 Rgb transformBw(float r, float g, float b) {
     float l = 0.299f * r + 0.587f * g + 0.114f * b;
-    l = scurve(l, 0.35f);  // punchy monochrome
+    l = scurve(l, 0.95f);  // strong, high-contrast monochrome
     return {l, l, l};
 }
 
 Rgb transformSepia(float r, float g, float b) {
-    return {
-        clamp01(0.393f * r + 0.769f * g + 0.189f * b),
-        clamp01(0.349f * r + 0.686f * g + 0.168f * b),
-        clamp01(0.272f * r + 0.534f * g + 0.131f * b),
-    };
+    // Classic sepia matrix pushed further toward the amber tone.
+    float sr = clamp01(0.47f * r + 0.86f * g + 0.21f * b);
+    float sg = clamp01(0.33f * r + 0.67f * g + 0.16f * b);
+    float sb = clamp01(0.19f * r + 0.38f * g + 0.09f * b);
+    sr = scurve(sr, 0.4f);
+    sg = scurve(sg, 0.4f);
+    sb = scurve(sb, 0.4f);
+    return {sr, sg, sb};
 }
 
 Rgb transformVintage(float r, float g, float b) {
     float l = 0.299f * r + 0.587f * g + 0.114f * b;
-    // desaturate, lift blacks / fade highlights, warm tint
-    r = lerp(r, l, 0.25f) * 0.86f + 0.075f;
-    g = lerp(g, l, 0.25f) * 0.86f + 0.065f;
-    b = lerp(b, l, 0.25f) * 0.86f + 0.05f;
-    r = scurve(r, 0.15f) + 0.035f;
-    g = scurve(g, 0.15f);
-    b = scurve(b, 0.15f) - 0.045f;
+    // heavy desaturate, lifted faded blacks, unmistakable warm/orange cast
+    r = lerp(r, l, 0.52f) * 0.78f + 0.17f;
+    g = lerp(g, l, 0.52f) * 0.76f + 0.12f;
+    b = lerp(b, l, 0.52f) * 0.68f + 0.06f;
+    r = scurve(r, 0.45f) + 0.08f;
+    g = scurve(g, 0.45f);
+    b = scurve(b, 0.45f) - 0.12f;
     return {clamp01(r), clamp01(g), clamp01(b)};
 }
 
 Rgb transformFilmWarm(float r, float g, float b) {
     float l = 0.299f * r + 0.587f * g + 0.114f * b;
-    // gentle contrast S-curve, slight saturation boost, warm shift
-    r = clamp01(lerp(l, scurve(r, 0.3f), 1.1f) + 0.03f);
-    g = clamp01(lerp(l, scurve(g, 0.3f), 1.08f));
-    b = clamp01(lerp(l, scurve(b, 0.3f), 1.05f) - 0.03f);
+    // pronounced S-curve, saturation push, golden-hour warm shift
+    r = clamp01(lerp(l, scurve(r, 0.70f), 1.33f) + 0.09f);
+    g = clamp01(lerp(l, scurve(g, 0.70f), 1.24f) + 0.03f);
+    b = clamp01(lerp(l, scurve(b, 0.70f), 1.10f) - 0.10f);
     return {r, g, b};
 }
 
 Rgb transformFilmCool(float r, float g, float b) {
     float l = 0.299f * r + 0.587f * g + 0.114f * b;
-    r = clamp01(lerp(l, scurve(r, 0.3f), 1.02f) - 0.02f);
-    g = clamp01(lerp(l, scurve(g, 0.3f), 1.02f) + 0.005f);
-    b = clamp01(lerp(l, scurve(b, 0.3f), 1.05f) + 0.04f);
+    // teal-shadow / cool-highlight cinematic grade
+    r = clamp01(lerp(l, scurve(r, 0.70f), 1.14f) - 0.07f);
+    g = clamp01(lerp(l, scurve(g, 0.70f), 1.17f) + 0.03f);
+    b = clamp01(lerp(l, scurve(b, 0.70f), 1.25f) + 0.12f);
     return {r, g, b};
 }
 

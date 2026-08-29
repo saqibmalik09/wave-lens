@@ -17,7 +17,10 @@ enum Param {
     PARAM_VIGNETTE = 5,
     PARAM_GLOW = 6,
     PARAM_LUT_INTENSITY = 7,
-    PARAM_COUNT = 8
+    PARAM_SMOOTHING = 8,    // 0..1 — edge-preserving skin smoothing (beauty)
+    PARAM_SHARPEN = 9,      // 0..1 — unsharp-mask detail boost (low-quality cameras)
+    PARAM_FACE_DEFORM = 10, // 0..1 — slight face bulge (funny), only when a face is tracked
+    PARAM_COUNT = 11
 };
 
 // Smoothed auto-adjust state (auto exposure / contrast / white balance).
@@ -25,9 +28,29 @@ struct AutoState {
     float brightness = 0.f;
     float contrast = 0.f;
     float temperature = 0.f;
+    float denoise = 0.f;
     float targetBrightness = 0.f;
     float targetContrast = 0.f;
     float targetTemperature = 0.f;
+    float targetDenoise = 0.f;
+};
+
+// Face tracking state, fed from Kotlin (ML Kit) in screen-normalized coords
+// (x right 0..1, y up 0..1). "target*" is the latest detection; the engine
+// smooths toward it every frame so stickers glide instead of jittering.
+struct FaceState {
+    bool detected = false;
+    float presence = 0.f;  // smoothed 0..1 — effects fade in/out with this
+    float eyeL[2] = {0.4f, 0.6f};
+    float eyeR[2] = {0.6f, 0.6f};
+    float up[2] = {0.f, 1.f};
+    float center[2] = {0.5f, 0.55f};
+    float radius = 0.25f;
+    float tEyeL[2] = {0.4f, 0.6f};
+    float tEyeR[2] = {0.6f, 0.6f};
+    float tUp[2] = {0.f, 1.f};
+    float tCenter[2] = {0.5f, 0.55f};
+    float tRadius = 0.25f;
 };
 
 struct Fbo {
@@ -60,11 +83,23 @@ public:
     void setAutoEnabled(bool enabled);
     bool autoEnabled() const { return autoOn_; }
 
+    // Face tracking (call on GL thread). Coords are screen-normalized, y up.
+    void setFaceState(bool detected, float eyeLx, float eyeLy, float eyeRx, float eyeRy,
+                      float upX, float upY, float centerX, float centerY, float radius);
+    // 32-bit RGBA sticker image + placement: offset (along face "up", in eye-distance
+    // units from the eye midpoint) and span (sticker width in eye-distance units).
+    void setSticker(const uint8_t* rgba, int w, int h, float offsetEyeDists, float spanEyeDists);
+    void clearSticker();
+
 private:
     struct ProcessLocs {
         GLint texMatrix = -1, tex = -1, lutTex = -1;
         GLint brightness = -1, contrast = -1, saturation = -1;
         GLint temperature = -1, tint = -1, vignette = -1, lutIntensity = -1;
+        GLint smoothing = -1, sharpen = -1, texelSize = -1;
+        GLint facePresence = -1, faceDeform = -1, faceEyeL = -1, faceEyeR = -1;
+        GLint faceUp = -1, faceCenter = -1, faceRadius = -1, aspect = -1;
+        GLint sticker = -1, stickerOn = -1, stickerOffset = -1, stickerSpan = -1;
     };
     struct SimpleLocs {
         GLint texMatrix = -1, tex = -1;
@@ -112,6 +147,17 @@ private:
     std::vector<uint8_t> customLut_;  // non-empty when a .cube LUT is loaded
     bool autoOn_ = false;
     AutoState auto_;
+
+    void stepFaceSmoothing();
+
+    FaceState face_;
+    GLuint stickerTex_ = 0;
+    std::vector<uint8_t> stickerPending_;  // uploaded lazily on the GL thread in draw()
+    int stickerW_ = 0, stickerH_ = 0;
+    bool stickerDirty_ = false;
+    bool stickerOn_ = false;
+    float stickerOffset_ = 0.f;
+    float stickerSpan_ = 2.3f;
 };
 
 }  // namespace wavelens

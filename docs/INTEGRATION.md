@@ -59,9 +59,22 @@ Forward lifecycle: call `waveLensView.onResume()` / `waveLensView.onPause()`.
 ## 4. Build the tray from the license
 
 ```kotlin
-val presets = WaveLens.availablePresets()  // entitled ∩ enabled, fail-open
+val presets = WaveLens.availablePresets()          // entitled ∩ enabled, fail-open
+val groups = WaveLens.presetsByCategory()          // "auto" / "beauty" / "enhance" / "effects"
 WaveLens.addLicenseListener { active, filters -> /* rebuild your tray */ }
 ```
+
+Category order for the tray: **Auto → Beauty → Enhance → Face → Effects**. Presets with
+`autoMode = true` (Auto, Natural, HD Boost) turn on live camera analysis when applied.
+
+Face presets (Chasma sunglasses, Hearts, Cat Ears, Funny Face) start runtime face
+tracking automatically: the effect renders only while a face is detected and follows
+it live. A built-in "Find A face" hint shows for 2 seconds when no face is in front
+of the camera, then hides (customize via `waveLensView.faceHintText`).
+
+The tray is **server-driven**: presets come from the license API's `filter_configs`,
+so filters added or tuned in the backend appear in installed apps at the next license
+refresh — no app rebuild. See [PLATFORMS.md](./PLATFORMS.md) for the cross-stack matrix.
 
 That's the entire integration. No tokens, no callbacks required at stream time,
 no network on the render path.

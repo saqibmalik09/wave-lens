@@ -85,8 +85,10 @@ export class AuthService {
     const secretHash = TenantsService.hashSecret(clientSecret);
     const passwordHash = await bcrypt.hash(dto.password, 12);
 
+    // New tenants get all live filter categories by default, including the
+    // face-anchored AR filters (runtime face tracking shipped in engine v2).
     const colorFilters = await this.prisma.filter.findMany({
-      where: { category: 'color' },
+      where: { category: { in: ['auto', 'beauty', 'enhance', 'effects', 'face'] } },
       select: { id: true },
     });
 

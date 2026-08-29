@@ -45,11 +45,34 @@ internal class LicenseClient(
     var filters: List<String> = readCachedFilters()
         private set
 
+    /**
+     * Presets built from the server's `filter_configs` (cached across launches).
+     * Non-empty means the tray is fully server-driven: filters added/tuned in the
+     * backend appear here after a refresh — no app rebuild.
+     */
+    @Volatile
+    var serverPresets: List<com.wavelens.sdk.FilterPreset> =
+        ServerCatalog.parse(prefs.getString(KEY_CONFIGS, null))
+        private set
+
     /** True once at least one successful server response has ever been cached. */
     val hasServerResult: Boolean get() = prefs.contains(KEY_ACTIVE)
 
     fun addListener(listener: (active: Boolean, filters: List<String>) -> Unit) {
         synchronized(listeners) { listeners.add(listener) }
+    }
+
+    // Human-readable status events ("account deactivated", "filters updated", ...)
+    // delivered on the main thread — only when something notable happens.
+    private val statusListeners = mutableListOf<(active: Boolean, message: String) -> Unit>()
+    private var statusEmittedOnce = false
+
+    fun addStatusListener(listener: (active: Boolean, message: String) -> Unit) {
+        synchronized(statusListeners) { statusListeners.add(listener) }
+    }
+
+    fun removeStatusListener(listener: (active: Boolean, message: String) -> Unit) {
+        synchronized(statusListeners) { statusListeners.remove(listener) }
     }
 
     fun start() {
@@ -92,22 +115,50 @@ internal class LicenseClient(
             val body = connection.inputStream.bufferedReader().use(BufferedReader::readText)
             val json = JSONObject(body)
             val newActive = json.optBoolean("active", false)
+            val serverMessage = json.optString("message", "").takeIf { it.isNotBlank() }
             val filtersJson = json.optJSONArray("filters") ?: JSONArray()
             val newFilters = ArrayList<String>(filtersJson.length())
             for (i in 0 until filtersJson.length()) {
                 newFilters.add(filtersJson.getString(i))
             }
+            val configsJson = json.optJSONArray("filter_configs")
+
+            val prevActive = active
+            val prevFilters = filters.toSet()
+            val hadSynced = hasServerResult
 
             active = newActive
             filters = newFilters
+            serverPresets = ServerCatalog.parse(configsJson?.toString())
             prefs.edit()
                 .putBoolean(KEY_ACTIVE, newActive)
                 .putString(KEY_FILTERS, filtersJson.toString())
+                .putString(KEY_CONFIGS, configsJson?.toString())
                 .putLong(KEY_UPDATED_AT, System.currentTimeMillis())
                 .apply()
 
+            val statusMessage = when {
+                // Deactivated (or app started while deactivated): tell the host once.
+                !newActive && (prevActive || !statusEmittedOnce) ->
+                    serverMessage ?: "Wave Lens filters are turned off for this account. Please contact your provider."
+                // Reactivated.
+                newActive && !prevActive && hadSynced ->
+                    "Wave Lens filters are active again."
+                // Filter lineup changed while active (added/removed in Studio).
+                newActive && hadSynced && prevFilters != newFilters.toSet() ->
+                    "Filters updated — your tray has changed."
+                else -> null
+            }
+            statusEmittedOnce = true
+
             val snapshot = synchronized(listeners) { listeners.toList() }
-            mainHandler.post { snapshot.forEach { it(newActive, newFilters) } }
+            val statusSnapshot = synchronized(statusListeners) { statusListeners.toList() }
+            mainHandler.post {
+                snapshot.forEach { it(newActive, newFilters) }
+                if (statusMessage != null) {
+                    statusSnapshot.forEach { it(newActive, statusMessage) }
+                }
+            }
         } catch (e: Exception) {
             // Fail-open: network problems never reduce access. Cached state stays in effect.
             Log.w(TAG, "License check failed (${e.message}) — keeping cached state")
@@ -130,7 +181,12 @@ internal class LicenseClient(
         const val TAG = "WaveLens"
         const val KEY_ACTIVE = "active"
         const val KEY_FILTERS = "filters"
+        const val KEY_CONFIGS = "filter_configs"
         const val KEY_UPDATED_AT = "updated_at"
-        const val REFRESH_INTERVAL_MS = 4L * 60 * 60 * 1000  // 4 hours
+        // Short enough that Studio changes (enable/disable filters, deactivation)
+        // reach live apps almost immediately; the payload is ~1-2 KB so even at
+        // 2 minutes the traffic is negligible. Call WaveLens.refreshLicense()
+        // before going live for instant pickup.
+        const val REFRESH_INTERVAL_MS = 2L * 60 * 1000  // 2 minutes
     }
 }

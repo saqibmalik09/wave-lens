@@ -66,6 +66,21 @@ void Engine::onSurfaceCreated() {
     processLocs_.tint = glGetUniformLocation(progProcess_, "uTint");
     processLocs_.vignette = glGetUniformLocation(progProcess_, "uVignette");
     processLocs_.lutIntensity = glGetUniformLocation(progProcess_, "uLutIntensity");
+    processLocs_.smoothing = glGetUniformLocation(progProcess_, "uSmoothing");
+    processLocs_.sharpen = glGetUniformLocation(progProcess_, "uSharpen");
+    processLocs_.texelSize = glGetUniformLocation(progProcess_, "uTexelSize");
+    processLocs_.facePresence = glGetUniformLocation(progProcess_, "uFacePresence");
+    processLocs_.faceDeform = glGetUniformLocation(progProcess_, "uFaceDeform");
+    processLocs_.faceEyeL = glGetUniformLocation(progProcess_, "uFaceEyeL");
+    processLocs_.faceEyeR = glGetUniformLocation(progProcess_, "uFaceEyeR");
+    processLocs_.faceUp = glGetUniformLocation(progProcess_, "uFaceUp");
+    processLocs_.faceCenter = glGetUniformLocation(progProcess_, "uFaceCenter");
+    processLocs_.faceRadius = glGetUniformLocation(progProcess_, "uFaceRadius");
+    processLocs_.aspect = glGetUniformLocation(progProcess_, "uAspect");
+    processLocs_.sticker = glGetUniformLocation(progProcess_, "uSticker");
+    processLocs_.stickerOn = glGetUniformLocation(progProcess_, "uStickerOn");
+    processLocs_.stickerOffset = glGetUniformLocation(progProcess_, "uStickerOffset");
+    processLocs_.stickerSpan = glGetUniformLocation(progProcess_, "uStickerSpan");
 
     oesCopyLocs_.texMatrix = glGetUniformLocation(progOesCopy_, "uTexMatrix");
     oesCopyLocs_.tex = glGetUniformLocation(progOesCopy_, "uTexture");
@@ -95,6 +110,18 @@ void Engine::onSurfaceCreated() {
 
     lutTex_ = lut::createTexture();
     applyCurrentLut();
+
+    // Sticker texture object (contents uploaded lazily when a face preset sets one).
+    // Start with a 1x1 transparent pixel so the texture is always complete.
+    glGenTextures(1, &stickerTex_);
+    glBindTexture(GL_TEXTURE_2D, stickerTex_);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    const uint8_t clearPx[4] = {0, 0, 0, 0};
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, clearPx);
+    if (!stickerPending_.empty()) stickerDirty_ = true;  // re-upload after context loss
 
     createFbo(analysis_, kAnalysisDim, kAnalysisDim);
 
@@ -165,6 +192,30 @@ void Engine::drawProcessPass(int oesTextureId, const float* texMatrix16, float b
     glUniform1f(processLocs_.tint, tint);
     glUniform1f(processLocs_.vignette, vignette);
     glUniform1f(processLocs_.lutIntensity, lutIntensity);
+    // Auto low-light denoise stacks on top of any beauty smoothing (capped at 1).
+    float effSmoothing = params_[PARAM_SMOOTHING] + auto_.denoise;
+    if (effSmoothing > 1.f) effSmoothing = 1.f;
+    glUniform1f(processLocs_.smoothing, effSmoothing);
+    glUniform1f(processLocs_.sharpen, params_[PARAM_SHARPEN]);
+    glUniform2f(processLocs_.texelSize,
+                width_ > 0 ? 1.f / (float)width_ : 0.f,
+                height_ > 0 ? 1.f / (float)height_ : 0.f);
+
+    glUniform1f(processLocs_.facePresence, face_.presence);
+    glUniform1f(processLocs_.faceDeform, params_[PARAM_FACE_DEFORM]);
+    glUniform2f(processLocs_.faceEyeL, face_.eyeL[0], face_.eyeL[1]);
+    glUniform2f(processLocs_.faceEyeR, face_.eyeR[0], face_.eyeR[1]);
+    glUniform2f(processLocs_.faceUp, face_.up[0], face_.up[1]);
+    glUniform2f(processLocs_.faceCenter, face_.center[0], face_.center[1]);
+    glUniform1f(processLocs_.faceRadius, face_.radius);
+    glUniform1f(processLocs_.aspect, width_ > 0 ? (float)height_ / (float)width_ : 1.f);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, stickerTex_);
+    glUniform1i(processLocs_.sticker, 2);
+    glUniform1f(processLocs_.stickerOn, stickerOn_ ? 1.f : 0.f);
+    glUniform1f(processLocs_.stickerOffset, stickerOffset_);
+    glUniform1f(processLocs_.stickerSpan, stickerSpan_);
+
     drawQuad();
 }
 
@@ -176,6 +227,14 @@ void Engine::draw(int oesTextureId, const float* texMatrix16) {
         runAutoAnalysis(oesTextureId, texMatrix16);
     }
     stepAutoSmoothing();
+    stepFaceSmoothing();
+
+    if (stickerDirty_ && !stickerPending_.empty()) {
+        glBindTexture(GL_TEXTURE_2D, stickerTex_);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stickerW_, stickerH_, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, stickerPending_.data());
+        stickerDirty_ = false;
+    }
 
     const float brightness = params_[PARAM_BRIGHTNESS] + auto_.brightness;
     const float contrast = params_[PARAM_CONTRAST] + auto_.contrast;
@@ -258,15 +317,18 @@ void Engine::runAutoAnalysis(int oesTextureId, const float* texMatrix16) {
     auto_.targetBrightness = t.brightness;
     auto_.targetContrast = t.contrast;
     auto_.targetTemperature = t.temperature;
+    auto_.targetDenoise = t.denoise;
 }
 
 void Engine::stepAutoSmoothing() {
     float tb = autoOn_ ? auto_.targetBrightness : 0.f;
     float tc = autoOn_ ? auto_.targetContrast : 0.f;
     float tt = autoOn_ ? auto_.targetTemperature : 0.f;
+    float td = autoOn_ ? auto_.targetDenoise : 0.f;
     auto_.brightness += (tb - auto_.brightness) * kAutoSmoothing;
     auto_.contrast += (tc - auto_.contrast) * kAutoSmoothing;
     auto_.temperature += (tt - auto_.temperature) * kAutoSmoothing;
+    auto_.denoise += (td - auto_.denoise) * kAutoSmoothing;
 }
 
 void Engine::setParam(int param, float value) {
@@ -305,6 +367,56 @@ bool Engine::loadCubeLut(const std::string& cubeFileContents) {
 
 void Engine::setAutoEnabled(bool enabled) {
     autoOn_ = enabled;
+}
+
+void Engine::setFaceState(bool detected, float eyeLx, float eyeLy, float eyeRx, float eyeRy,
+                          float upX, float upY, float centerX, float centerY, float radius) {
+    face_.detected = detected;
+    if (detected) {
+        face_.tEyeL[0] = eyeLx;
+        face_.tEyeL[1] = eyeLy;
+        face_.tEyeR[0] = eyeRx;
+        face_.tEyeR[1] = eyeRy;
+        face_.tUp[0] = upX;
+        face_.tUp[1] = upY;
+        face_.tCenter[0] = centerX;
+        face_.tCenter[1] = centerY;
+        face_.tRadius = radius;
+    }
+}
+
+void Engine::stepFaceSmoothing() {
+    // Presence fades in fast (face found → effect appears quickly) and out a bit
+    // slower (brief tracking dropouts don't blink the sticker).
+    const float target = face_.detected ? 1.f : 0.f;
+    const float rate = face_.detected ? 0.25f : 0.10f;
+    face_.presence += (target - face_.presence) * rate;
+
+    // Glide geometry toward the latest detection to hide 15–30 Hz analysis jitter.
+    const float g = 0.35f;
+    for (int i = 0; i < 2; ++i) {
+        face_.eyeL[i] += (face_.tEyeL[i] - face_.eyeL[i]) * g;
+        face_.eyeR[i] += (face_.tEyeR[i] - face_.eyeR[i]) * g;
+        face_.up[i] += (face_.tUp[i] - face_.up[i]) * g;
+        face_.center[i] += (face_.tCenter[i] - face_.center[i]) * g;
+    }
+    face_.radius += (face_.tRadius - face_.radius) * g;
+}
+
+void Engine::setSticker(const uint8_t* rgba, int w, int h, float offsetEyeDists,
+                        float spanEyeDists) {
+    if (rgba == nullptr || w <= 0 || h <= 0) return;
+    stickerPending_.assign(rgba, rgba + (size_t)w * h * 4);
+    stickerW_ = w;
+    stickerH_ = h;
+    stickerOffset_ = offsetEyeDists;
+    stickerSpan_ = spanEyeDists;
+    stickerDirty_ = true;
+    stickerOn_ = true;
+}
+
+void Engine::clearSticker() {
+    stickerOn_ = false;
 }
 
 void Engine::destroyFbos() {

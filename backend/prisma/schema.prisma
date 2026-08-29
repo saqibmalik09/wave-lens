@@ -49,10 +49,14 @@ model User {
 model Filter {
   id               String   @id // e.g. "bw", "glow", "brightness"
   name             String
-  category         String // color | masks | backgrounds | ...
+  category         String // auto | beauty | enhance | effects | face
   type             String // continuous | discrete
   assetRef         String?  @map("asset_ref")
   minEngineVersion Int      @default(1) @map("min_engine_version")
+  // Server-driven preset definition delivered to installed SDKs at license refresh:
+  // { lut?, auto?, sticker?, params?: { brightness: 0.1, ... } }. Editing this (or
+  // adding a new filter row with a config) updates live apps without a rebuild.
+  config           Json?
   createdAt        DateTime @default(now()) @map("created_at")
 
   entitled TenantEntitledFilter[]

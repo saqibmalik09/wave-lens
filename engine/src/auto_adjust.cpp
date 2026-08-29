@@ -31,14 +31,21 @@ AutoTargets computeAutoTargets(const uint8_t* rgba, int pixelCount) {
     float variance = (float)(sumLuma2 / pixelCount) - meanLuma * meanLuma;
     float stddev = variance > 0.f ? std::sqrt(variance) : 0.f;
 
-    // Auto exposure: pull mean luminance toward mid-gray.
-    t.brightness = clampf((0.5f - meanLuma) * 0.8f, -0.3f, 0.3f);
+    // Auto exposure: pull mean luminance toward mid-gray (strong enough to rescue
+    // dim rooms and blown-out backlight, clamped so faces never look artificial).
+    t.brightness = clampf((0.5f - meanLuma) * 1.1f, -0.45f, 0.45f);
 
     // Auto contrast: flat scenes (low luma spread) get a boost, harsh ones get softened.
-    t.contrast = clampf((0.16f - stddev) * 1.2f, -0.15f, 0.25f);
+    t.contrast = clampf((0.16f - stddev) * 1.5f, -0.18f, 0.32f);
 
     // Auto white balance (gray-world): bluish frames get warmed, reddish frames cooled.
-    t.temperature = clampf((meanB - meanR) * 1.5f, -0.4f, 0.4f);
+    t.temperature = clampf((meanB - meanR) * 1.8f, -0.45f, 0.45f);
+
+    // Low-light rescue: dark scenes get extra smoothing to hide the sensor noise
+    // that the exposure lift would otherwise amplify. Free — reuses the beauty
+    // smoothing taps already in the main pass.
+    float lowLight = clampf((0.32f - meanLuma) / 0.32f, 0.f, 1.f);
+    t.denoise = lowLight * 0.35f;
 
     return t;
 }
