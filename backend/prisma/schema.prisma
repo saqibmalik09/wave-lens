@@ -18,10 +18,32 @@ model Tenant {
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
+  users    User[]
   entitled TenantEntitledFilter[]
   enabled  TenantEnabledFilter[]
 
   @@map("tenants")
+}
+
+enum UserRole {
+  ADMIN
+  TENANT
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String?
+  role         UserRole @default(TENANT)
+  tenantId     Int?     @map("tenant_id")
+  status       String   @default("active") // active | disabled
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  @@map("users")
 }
 
 model Filter {

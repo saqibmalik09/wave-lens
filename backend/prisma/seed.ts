@@ -1,11 +1,10 @@
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserRole } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 import { createHash } from 'crypto';
 
 const prisma = new PrismaClient();
 
-// Phase 1 catalog: color effects only. Ids match FilterPreset ids /
-// engine LUT names on the SDK side. Masks/backgrounds arrive in Phase 3/4.
 const FILTERS: Array<{ id: string; name: string; category: string; type: string }> = [
   { id: 'brightness', name: 'Brightness', category: 'color', type: 'continuous' },
   { id: 'contrast', name: 'Contrast', category: 'color', type: 'continuous' },
@@ -28,6 +27,12 @@ const DEMO_TENANT = {
   bundleId: 'com.wavelens.demo',
   clientId: 'wl_demo_client',
   clientSecret: 'wl_demo_secret',
+};
+
+const ADMIN = {
+  email: process.env.ADMIN_EMAIL ?? 'admin@wavelens.online',
+  password: process.env.ADMIN_PASSWORD ?? 'WaveLens@Admin2026',
+  name: 'Wave Lens Administrator',
 };
 
 async function main() {
@@ -53,7 +58,6 @@ async function main() {
     update: { status: 'active', clientSecretHash: secretHash },
   });
 
-  // Demo tenant is entitled to and has enabled the full color catalog.
   for (const filter of FILTERS) {
     await prisma.tenantEntitledFilter.upsert({
       where: { tenantId_filterId: { tenantId: tenant.id, filterId: filter.id } },
@@ -67,10 +71,32 @@ async function main() {
     });
   }
 
+  const adminHash = await bcrypt.hash(ADMIN.password, 12);
+  await prisma.user.upsert({
+    where: { email: ADMIN.email },
+    create: {
+      email: ADMIN.email,
+      passwordHash: adminHash,
+      name: ADMIN.name,
+      role: UserRole.ADMIN,
+      status: 'active',
+    },
+    update: {
+      passwordHash: adminHash,
+      name: ADMIN.name,
+      role: UserRole.ADMIN,
+      status: 'active',
+    },
+  });
+
   console.log('Seeded filter catalog (' + FILTERS.length + ' filters) and demo tenant:');
   console.log('  client_id     = ' + DEMO_TENANT.clientId);
-  console.log('  client_secret = ' + DEMO_TENANT.clientSecret + '  (store safely — hash only in DB)');
+  console.log('  client_secret = ' + DEMO_TENANT.clientSecret);
   console.log('  bundle_id     = ' + DEMO_TENANT.bundleId);
+  console.log('');
+  console.log('Studio admin account:');
+  console.log('  email    = ' + ADMIN.email);
+  console.log('  password = ' + ADMIN.password + '  (change ADMIN_PASSWORD in env for production)');
 }
 
 main()

@@ -167,7 +167,8 @@ code {
   box-shadow: 0 8px 28px rgba(147,51,234,0.12);
   transform: translateY(-2px);
 }
-.project-card__icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+.project-card__icon { display: block; margin-bottom: 0.65rem; }
+.project-card__icon .svg-icon { width: 2.25rem; height: 2.25rem; color: var(--wave-purple); }
 .project-card h3 { margin: 0 0 0.2rem; font-size: 1.05rem; color: var(--text); }
 .project-card__tag {
   margin: 0 0 0.5rem;
@@ -242,7 +243,16 @@ code {
   box-shadow: 0 4px 20px rgba(15,23,42,0.04);
 }
 .tech-card--live { border-color: rgba(147,51,234,0.25); }
-.tech-card__icon { font-size: 1.75rem; display: block; margin-bottom: 0.4rem; }
+.tech-card__icon { display: flex; align-items: center; margin-bottom: 0.55rem; min-height: 2rem; }
+.tech-card__icon .svg-icon { width: 2rem; height: 2rem; }
+.svg-icon--kotlin { color: #7f52ff; }
+.svg-icon--java { color: #ea2d2e; }
+.svg-icon--compose { color: #4285f4; }
+.svg-icon--react { color: #61dafb; }
+.svg-icon--apple { color: #1d1d1f; }
+.svg-icon--stream { color: var(--wave-purple); }
+.svg-icon--games { color: var(--wave-blue); }
+.svg-icon--catalog { color: var(--wave-blue); }
 .tech-card h3 { margin: 0 0 0.35rem; font-size: 1rem; }
 .tech-card p { margin: 0 0 0.65rem; font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
 
