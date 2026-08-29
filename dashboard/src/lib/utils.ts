@@ -5,6 +5,22 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** API base URL — runtime fallback when env was missing at build time. */
+export function getApiUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+  if (fromEnv) return fromEnv;
+
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'studio.wavelens.online' || host.endsWith('.wavelens.online')) {
+      return 'https://api.wavelens.online';
+    }
+  }
+
+  return 'http://localhost:5000';
+}
+
+/** @deprecated use getApiUrl() — kept for imports that read the constant */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
 
 export type UserRole = 'ADMIN' | 'TENANT';
@@ -77,7 +93,7 @@ export async function apiFetch<T>(
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  const res = await fetch(`${getApiUrl()}${path}`, { ...options, headers });
   if (!res.ok) throw new ApiError(await parseError(res), res.status);
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;

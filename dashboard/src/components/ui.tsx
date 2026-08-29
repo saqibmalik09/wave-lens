@@ -6,17 +6,17 @@ import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react
 
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background text-foreground relative overflow-x-clip py-10 px-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-background text-foreground relative overflow-x-clip py-10 px-4 sm:px-6">
       <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
       <div className="fixed bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      {children}
+      <div className="w-full max-w-lg relative z-10">{children}</div>
     </div>
   );
 }
 
 export function AuthCard({ children }: { children: ReactNode }) {
   return (
-    <div className="w-full max-w-md p-8 bg-card/80 backdrop-blur-xl border border-border rounded-xl shadow-2xl relative z-10">
+    <div className="w-full p-8 sm:p-10 bg-card/80 backdrop-blur-xl border border-border rounded-2xl shadow-2xl">
       {children}
     </div>
   );
@@ -28,7 +28,7 @@ export function BrandMark() {
       <div className="inline-flex justify-center items-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 mb-4 shadow-lg shadow-purple-600/25">
         <span className="font-bold text-white text-xl">W</span>
       </div>
-      <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
         Wave Lens Studio
       </h1>
     </div>
