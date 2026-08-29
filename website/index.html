@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wave Lens — Real-Time Camera Filters for Live Streaming Apps</title>
+  <meta name="description" content="Wave Lens is a lightweight real-time filter SDK for live-streaming apps. Beauty effects, face filters, background change, and AR — built for low-end Android phones and weak networks. By Wave Games.">
+  <meta name="keywords" content="Wave Lens, camera filters, live streaming filters, AR SDK, face filters, beauty filters, Android SDK, live app filters, Wave Games">
+  <meta name="author" content="Wave Games">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://wavelens.online/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wavelens.online/">
+  <meta property="og:title" content="Wave Lens — Real-Time Filters for Live Apps">
+  <meta property="og:description" content="GPU-powered camera filters for TikTok Live / Bigo-style apps. No lag, no heating, works offline. Licensed per app.">
+  <meta property="og:site_name" content="Wave Lens">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Wave Lens — Real-Time Filters for Live Apps">
+  <meta name="twitter:description" content="Lightweight filter SDK for live-streaming platforms. Built by Wave Games.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="logo">
+        <span class="logo__mark">WL</span>
+        <span class="logo__text">Wave Lens</span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#for-tenants">For apps</a>
+        <a href="#contact">Contact</a>
+        <a href="https://studio.wavelens.online" class="nav__cta">Studio</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero__glow" aria-hidden="true"></div>
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="badge">By Wave Games · Built for live streaming</p>
+          <h1>Real-time camera filters that never lag on cheap phones</h1>
+          <p class="hero__lead">
+            Wave Lens is a filter engine SDK for live-streaming apps. Beauty looks, face stickers,
+            background change, and AR — licensed per app with a simple <code>client_id</code> activation.
+            GPU-only rendering, tiny data usage, works offline after first sync.
+          </p>
+          <div class="hero__actions">
+            <a href="#contact" class="btn btn--primary">Get SDK access</a>
+            <a href="#how-it-works" class="btn btn--ghost">See how it works</a>
+          </div>
+          <ul class="hero__stats">
+            <li><strong>&lt;1 MB</strong><span>license check</span></li>
+            <li><strong>GPU</strong><span>shader pipeline</span></li>
+            <li><strong>Offline</strong><span>after first sync</span></li>
+            <li><strong>Android 10+</strong><span>and iOS soon</span></li>
+          </ul>
+        </div>
+        <div class="hero__visual" aria-hidden="true">
+          <div class="phone">
+            <div class="phone__screen">
+              <div class="phone__filter phone__filter--warm"></div>
+              <div class="phone__overlay">✨ Glow · Vintage · Cat ears</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="strip">
+      <div class="container strip__grid">
+        <div><span class="strip__icon">🎨</span><strong>Color effects</strong><span>Brightness, contrast, vintage, glow</span></div>
+        <div><span class="strip__icon">🐱</span><strong>Face filters</strong><span>Ears, glasses, makeup, masks</span></div>
+        <div><span class="strip__icon">🖼️</span><strong>Backgrounds</strong><span>Blur, replace, color</span></div>
+        <div><span class="strip__icon">⚡</span><strong>Low-end ready</strong><span>No heat, no glitch</span></div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="container">
+        <h2 class="section__title">Everything hosts need — nothing viewers notice</h2>
+        <p class="section__subtitle">Wave Lens runs inside your app. Hosts pick filters from a tray; viewers see polished video. You control which filters each app gets.</p>
+        <div class="cards">
+          <article class="card">
+            <h3>Beauty &amp; color</h3>
+            <p>Auto-adjust, brightness, contrast, saturation, warm/cool, B&amp;W, vintage, sepia, film looks, and glow — all in one GPU pass.</p>
+          </article>
+          <article class="card">
+            <h3>Face-anchored 2D</h3>
+            <p>Cat ears, crowns, sunglasses, makeup, face paint, festive stickers — anchored to face landmarks with on-demand asset packs.</p>
+          </article>
+          <article class="card">
+            <h3>Background change</h3>
+            <p>Real-time blur, solid color, or image replacement using lightweight segmentation — tuned for rural networks.</p>
+          </article>
+          <article class="card">
+            <h3>Simple licensing</h3>
+            <p>One <code>client_id</code> + <code>client_secret</code> per app. No per-host keys. Enable or disable filters from Studio dashboard.</p>
+          </article>
+          <article class="card">
+            <h3>Fast integration</h3>
+            <p>Android AAR today; Flutter and React Native wrappers next. Add one view + one init call — beginner-friendly setup.</p>
+          </article>
+          <article class="card">
+            <h3>Built for real markets</h3>
+            <p>Designed for low-end Android, weak 5 KB/s networks, and long live sessions without heating or APK bloat.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="section section--alt">
+      <div class="container">
+        <h2 class="section__title">How Wave Lens works</h2>
+        <ol class="steps">
+          <li>
+            <span class="steps__num">1</span>
+            <div>
+              <h3>We activate your app</h3>
+              <p>You get a tenant account on <a href="https://studio.wavelens.online">studio.wavelens.online</a> with a <code>client_id</code> bound to your app bundle ID.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps__num">2</span>
+            <div>
+              <h3>Integrate the SDK</h3>
+              <p>Add the Wave Lens library, call <code>WaveLens.init()</code>, and drop in <code>WaveLensView</code> for the filtered camera preview.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps__num">3</span>
+            <div>
+              <h3>Hosts go live with filters</h3>
+              <p>Filter tray shows only what you enabled. Assets download once and cache forever — fully offline after first use.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="for-tenants" class="section">
+      <div class="container cta-box">
+        <div>
+          <h2>For live-streaming &amp; social apps</h2>
+          <p>Wave Lens is part of the <strong>Wave Games</strong> platform family — the same team behind live streaming, games, and creator tools for emerging markets.</p>
+          <p>Whether you run a TikTok Live-style app, audio/video social platform, or creator tool — Wave Lens adds professional filters without Banuba-level cost or Snap Camera Kit limits.</p>
+        </div>
+        <div class="cta-box__links">
+          <a href="https://studio.wavelens.online" class="btn btn--primary">Open Studio</a>
+          <a href="https://api.wavelens.online/v1/license/status" class="btn btn--ghost">API status endpoint</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section section--alt">
+      <div class="container contact">
+        <div class="contact__info">
+          <h2>Contact Wave Games</h2>
+          <p>Request SDK access, tenant activation, or a demo for your live app.</p>
+          <ul class="contact__list">
+            <li>
+              <strong>Phone</strong>
+              <a href="tel:+923001234567">+92 300 1234567</a>
+            </li>
+            <li>
+              <strong>Email</strong>
+              <a href="mailto:support@wavegames.com">support@wavegames.com</a>
+            </li>
+            <li>
+              <strong>Studio</strong>
+              <a href="https://studio.wavelens.online">studio.wavelens.online</a>
+            </li>
+            <li>
+              <strong>API</strong>
+              <a href="https://api.wavelens.online">api.wavelens.online</a>
+            </li>
+          </ul>
+          <p class="contact__note">Update phone and email in <code>website/index.html</code> before going live.</p>
+        </div>
+        <form class="contact__form" action="mailto:support@wavegames.com" method="post" enctype="text/plain">
+          <label>
+            Your name
+            <input type="text" name="name" required placeholder="App owner / developer">
+          </label>
+          <label>
+            App name
+            <input type="text" name="app" placeholder="Your live streaming app">
+          </label>
+          <label>
+            Message
+            <textarea name="body" rows="4" required placeholder="Tell us about your app and platform (Android / iOS / Flutter)..."></textarea>
+          </label>
+          <button type="submit" class="btn btn--primary btn--block">Send inquiry</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>&copy; <span id="year"></span> Wave Lens · A Wave Games product · <a href="https://wavelens.online">wavelens.online</a></p>
+      <p class="footer__links">
+        <a href="https://studio.wavelens.online">Studio</a>
+        <a href="https://api.wavelens.online">API</a>
+        <a href="#contact">Contact</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
