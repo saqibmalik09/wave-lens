@@ -42,7 +42,23 @@ pm2 restart wavelens-studio --update-env 2>/dev/null \
   || pm2 start npm --name wavelens-studio --cwd "$ROOT/dashboard" -- run start
 
 echo ""
-echo "==> [6/6] Save pm2 process list"
+echo "==> [6/7] Website: copy static files to /var/www/wavelens-website"
+mkdir -p /var/www/wavelens-website
+BUILD_ID="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || date +%s)"
+STAGE="$(mktemp -d)"
+cp -r "$ROOT/website/"* "$STAGE/"
+# Cache-bust CSS + hero image so deploys show immediately (nginx may still cache assets separately).
+for page in "$STAGE"/*.html; do
+  [ -f "$page" ] || continue
+  sed -i "s|/styles.css|/styles.css?v=${BUILD_ID}|g" "$page"
+  sed -i "s|mobile-live-filters-mockup.png|mobile-live-filters-mockup.png?v=${BUILD_ID}|g" "$page"
+done
+cp -r "$STAGE/"* /var/www/wavelens-website/
+rm -rf "$STAGE"
+echo "    Published website (build ${BUILD_ID}) — no nginx reload"
+
+echo ""
+echo "==> [7/7] Save pm2 process list"
 pm2 save
 
 echo ""
