@@ -23,10 +23,15 @@ nginx -t
 systemctl reload nginx
 
 echo ""
-echo "Nginx OK. Next run SSL (no www — you have no www DNS record):"
+echo "Nginx OK."
+echo ""
+echo "IMPORTANT — If studio.wavelens.online already had SSL (certbot), re-apply it"
+echo "so HTTPS proxies to Next.js (port 3001), not the old coming-soon page:"
+echo "  certbot --nginx -d studio.wavelens.online"
+echo ""
+echo "Other SSL (if not done yet):"
 echo "  certbot --nginx -d wavelens.online"
 echo "  certbot --nginx -d api.wavelens.online"
-echo "  certbot --nginx -d studio.wavelens.online"
 echo ""
 echo "Test API:"
 echo '  curl "http://api.wavelens.online/v1/license/status?client_id=wl_demo_client&client_secret=wl_demo_secret&bundle_id=com.wavelens.demo"'
