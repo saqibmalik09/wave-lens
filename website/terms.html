@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms &amp; Rules — Wave Lens</title>
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/logo.png" type="image/png">
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="/" class="logo">
+        <img src="/assets/logo.png" alt="Wave Lens" class="logo__img" width="36" height="36">
+        <span class="logo__text wave-gradient-text">Wave Lens</span>
+      </a>
+      <nav class="nav"><a href="/">Home</a><a href="/privacy.html">Privacy</a></nav>
+    </div>
+  </header>
+
+  <main class="legal">
+    <div class="container legal__inner">
+      <h1>Terms &amp; Rules</h1>
+      <p class="legal__updated">Last updated: August 2026</p>
+
+      <p>These terms govern use of the Wave Lens website (wavelens.online), Studio dashboard, and SDK licensing services operated by <strong>Wave Tech</strong>.</p>
+
+      <h2>SDK license</h2>
+      <ul>
+        <li>Each app (tenant) receives one <code>client_id</code> bound to a single bundle/package ID.</li>
+        <li>Filters available to hosts are controlled by Wave Tech (entitlements) and the tenant (enabled list).</li>
+        <li>SDK access may be suspended for abuse, non-payment, or violation of these terms.</li>
+        <li>The compiled SDK is licensed — source code is not provided.</li>
+      </ul>
+
+      <h2>Acceptable use</h2>
+      <ul>
+        <li>Tenants must comply with applicable laws in their markets.</li>
+        <li>Do not use Wave Lens for illegal content, harassment, or deceptive practices.</li>
+        <li>Do not reverse-engineer, decompile, or redistribute the SDK beyond your licensed app.</li>
+        <li>End-user camera data must be processed according to your own app privacy policy.</li>
+      </ul>
+
+      <h2>Service availability</h2>
+      <p>We aim for high availability but do not guarantee uninterrupted service. License checks fail-open using cached data so hosts are not blocked mid-stream by network issues.</p>
+
+      <h2>Intellectual property</h2>
+      <p>Wave Lens, filter assets, and branding are owned by Wave Tech. Tenants receive a limited license to use the SDK within their activated app only.</p>
+
+      <h2>Copyright</h2>
+      <p>&copy; 2025–2026 Wave Tech. All rights reserved. Wave Lens, Wave Live, Wave Games, and related marks are products of Wave Tech.</p>
+
+      <h2>Contact</h2>
+      <p>
+        WhatsApp: <a href="https://wa.me/923252265427">+92 325 226 5427</a><br>
+        Email: <a href="mailto:supportwavetech@gmail.online">supportwavetech@gmail.online</a>
+      </p>
+
+      <p><a href="/">← Back to Wave Lens</a></p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <nav class="footer__legal">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms &amp; Rules</a>
+        <a href="/">Home</a>
+      </nav>
+      <p class="footer__copy">&copy; <span id="year"></span> Wave Tech. All rights reserved.</p>
+    </div>
+  </footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
