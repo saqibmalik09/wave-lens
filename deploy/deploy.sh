@@ -12,11 +12,11 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 echo ""
-echo "==> [1/6] Pulling latest code"
+echo "==> [1/8] Pulling latest code"
 git pull --ff-only
 
 echo ""
-echo "==> [2/6] Backend: install + migrate + build"
+echo "==> [2/8] Backend: install + migrate + build"
 cd "$ROOT/backend"
 npm install
 npx prisma migrate deploy
@@ -26,23 +26,23 @@ npm run build
 npm run prisma:seed
 
 echo ""
-echo "==> [3/6] Backend: restart"
+echo "==> [3/8] Backend: restart"
 pm2 restart wavelens-api --update-env 2>/dev/null \
   || pm2 start npm --name wavelens-api --cwd "$ROOT/backend" -- run start
 
 echo ""
-echo "==> [4/6] Dashboard: install + build"
+echo "==> [4/8] Dashboard: install + build"
 cd "$ROOT/dashboard"
 npm install
 npm run build
 
 echo ""
-echo "==> [5/6] Dashboard: restart"
+echo "==> [5/8] Dashboard: restart"
 pm2 restart wavelens-studio --update-env 2>/dev/null \
   || pm2 start npm --name wavelens-studio --cwd "$ROOT/dashboard" -- run start
 
 echo ""
-echo "==> [6/7] Website: copy static files to /var/www/wavelens-website"
+echo "==> [6/8] Website: copy static files to /var/www/wavelens-website"
 mkdir -p /var/www/wavelens-website
 BUILD_ID="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || date +%s)"
 STAGE="$(mktemp -d)"
@@ -55,10 +55,14 @@ for page in "$STAGE"/*.html; do
 done
 cp -r "$STAGE/"* /var/www/wavelens-website/
 rm -rf "$STAGE"
-echo "    Published website (build ${BUILD_ID}) — no nginx reload"
+echo "    Published website (build ${BUILD_ID})"
 
 echo ""
-echo "==> [7/7] Save pm2 process list"
+echo "==> [7/8] Nginx + SSL (wavelens.online HTTPS)"
+bash "$ROOT/deploy/sync-nginx.sh"
+
+echo ""
+echo "==> [8/8] Save pm2 process list"
 pm2 save
 
 echo ""
