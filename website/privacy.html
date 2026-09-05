@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — Wave Lens</title>
+  <meta name="description" content="Privacy Policy for Wave Lens camera filter SDK, Studio dashboard, and wavelens.online.">
   <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://wavelens.online/privacy.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
   <link rel="icon" href="/assets/logo.png" type="image/png">
 </head>
@@ -13,41 +18,142 @@
     <div class="container header__inner">
       <a href="/" class="logo">
         <img src="/assets/logo.png" alt="Wave Lens" class="logo__img" width="36" height="36">
-        <span class="logo__text wave-gradient-text">Wave Lens</span>
+        <span class="logo__text">Wave Lens</span>
       </a>
-      <nav class="nav"><a href="/">Home</a><a href="/terms.html">Terms</a></nav>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/#contact">Contact</a>
+      </nav>
     </div>
   </header>
 
   <main class="legal">
     <div class="container legal__inner">
       <h1>Privacy Policy</h1>
-      <p class="legal__updated">Last updated: August 2026</p>
+      <p class="legal__updated">Last updated: September 5, 2026</p>
 
-      <p>Wave Lens is a product of <strong>Wave Tech</strong> (wavelens.online). We respect your privacy and are committed to protecting personal information collected through this website and our SDK licensing services.</p>
-
-      <h2>Information we collect</h2>
-      <ul>
-        <li><strong>Website visitors:</strong> standard server logs (IP address, browser type, pages visited) for security and analytics.</li>
-        <li><strong>SDK tenants:</strong> app name, bundle ID, contact email, and usage statistics (filter counts, active devices) for licensing and support.</li>
-        <li><strong>End users of tenant apps:</strong> Wave Lens processes camera frames on-device. We do not upload, store, or transmit end-user video to our servers.</li>
-      </ul>
-
-      <h2>How we use information</h2>
-      <ul>
-        <li>To activate and manage SDK licenses per app (tenant).</li>
-        <li>To provide support via WhatsApp or email.</li>
-        <li>To improve filter performance and reliability.</li>
-        <li>To comply with legal obligations.</li>
-      </ul>
-
-      <h2>Data sharing</h2>
-      <p>We do not sell personal data. We may share information with service providers (hosting, CDN) under contract, or when required by law.</p>
-
-      <h2>Contact</h2>
       <p>
+        This Privacy Policy explains how <strong>Wave Tech</strong> (“we”, “us”) collects, uses, and protects information
+        when you visit <strong>wavelens.online</strong>, use <strong>Wave Lens Studio</strong> (studio.wavelens.online),
+        or integrate the <strong>Wave Lens SDK</strong> into your mobile application.
+      </p>
+      <p>
+        Wave Lens is a real-time camera filter product. Our design goal is simple:
+        <strong>camera frames stay on the end user’s device</strong> whenever possible.
+      </p>
+
+      <h2>1. Who this policy covers</h2>
+      <ul>
+        <li><strong>Website visitors</strong> — people browsing wavelens.online.</li>
+        <li><strong>Customers / tenants</strong> — companies or developers who license Wave Lens for their apps and use Studio.</li>
+        <li><strong>End users</strong> — people who open the camera inside a customer’s app that embeds Wave Lens.</li>
+      </ul>
+
+      <h2>2. Information we collect</h2>
+      <h3 style="color:var(--text);font-size:1rem;margin:1rem 0 0.4rem;">Website</h3>
+      <ul>
+        <li>Standard server logs: IP address, user agent, pages requested, timestamps — used for security and reliability.</li>
+        <li>Messages you send us via WhatsApp or email (name, number/email, and whatever you include in the conversation).</li>
+      </ul>
+
+      <h3 style="color:var(--text);font-size:1rem;margin:1rem 0 0.4rem;">Studio &amp; licensing (customers)</h3>
+      <ul>
+        <li>Account details: contact name, email, company/app name.</li>
+        <li>App identifiers: Android package name (or equivalent) bound to your license.</li>
+        <li>Credentials we issue: client ID / client secret (stored securely for authentication).</li>
+        <li>Usage statistics for licensing and support: filter entitlement counts, enabled filters, approximate active-device or session counters, and last activity timestamps.</li>
+        <li>Billing-related correspondence for the monthly plan (currently USD 200 / month for complete access and support).</li>
+      </ul>
+
+      <h3 style="color:var(--text);font-size:1rem;margin:1rem 0 0.4rem;">SDK / end users (in customer apps)</h3>
+      <ul>
+        <li><strong>Camera frames and filter rendering are processed on-device</strong> on the end user’s phone.</li>
+        <li>We do <strong>not</strong> upload, store, or stream end-user video, photos, face meshes, or microphone audio to Wave Tech servers as part of normal filter operation.</li>
+        <li>The SDK may contact our license service to validate your app’s credentials and download filter packs you enabled. Those requests typically include app identifiers and license tokens — not the camera image.</li>
+        <li>Customers remain responsible for their own privacy notices to end users (camera permission, recording, streaming destinations, etc.).</li>
+      </ul>
+
+      <h2>3. How we use information</h2>
+      <ul>
+        <li>Provide, activate, and manage SDK licenses and Studio access.</li>
+        <li>Deliver filter packs and product updates you are entitled to.</li>
+        <li>Show dashboard statistics and help you configure which filters hosts see.</li>
+        <li>Provide customer support and integration help.</li>
+        <li>Process subscription / payment coordination for your plan.</li>
+        <li>Protect against abuse, fraud, and unauthorized use of the SDK.</li>
+        <li>Improve reliability and performance of Wave Lens.</li>
+        <li>Comply with law and enforce our Terms.</li>
+      </ul>
+
+      <h2>4. Legal bases (where applicable)</h2>
+      <p>
+        Depending on your location, we rely on one or more of: performance of a contract (providing the SDK/Studio),
+        legitimate interests (security, product improvement, answering inquiries), consent (where required),
+        and legal obligation.
+      </p>
+
+      <h2>5. Sharing</h2>
+      <p>We do <strong>not sell</strong> personal data. We may share limited information with:</p>
+      <ul>
+        <li>Hosting, CDN, email, or payment processors who help us operate Wave Lens under confidentiality obligations.</li>
+        <li>Authorities when required by law or to protect rights and safety.</li>
+        <li>A successor entity if Wave Tech is involved in a merger or acquisition (you would still be protected under this policy or a successor notice).</li>
+      </ul>
+
+      <h2>6. Retention</h2>
+      <ul>
+        <li>Website logs: retained for a limited operational period, then deleted or anonymized.</li>
+        <li>Customer account &amp; license data: kept while your subscription is active and for a reasonable period afterward for billing, disputes, and legal needs.</li>
+        <li>Support messages: kept as long as needed to resolve your request and maintain service history.</li>
+      </ul>
+
+      <h2>7. Security</h2>
+      <p>
+        We use reasonable administrative and technical measures to protect credentials and account data
+        (HTTPS, access controls, least-privilege practices). No method of transmission or storage is 100% secure;
+        please keep your Studio password and client secret confidential.
+      </p>
+
+      <h2>8. International transfers</h2>
+      <p>
+        Wave Tech may process data on servers outside your country. Where required, we take steps appropriate
+        to the transfer (contractual safeguards with processors, etc.).
+      </p>
+
+      <h2>9. Your choices &amp; rights</h2>
+      <p>
+        Depending on your region, you may have rights to access, correct, delete, or export personal data,
+        or to object to certain processing. Contact us using the details below. We may need to verify your identity
+        and, for tenant data, confirm you are authorized for that account.
+      </p>
+
+      <h2>10. Children</h2>
+      <p>
+        Wave Lens is offered to businesses and developers. Our website and Studio are not directed at children under 16.
+        If you believe a child provided us personal data, contact us and we will delete it.
+      </p>
+
+      <h2>11. Customer responsibilities</h2>
+      <p>
+        If you embed Wave Lens, you must obtain any camera (and related) permissions required by platform policy and law,
+        and disclose to your end users how <em>your</em> app uses the camera, recordings, and live streams.
+        Wave Lens does not replace your app’s privacy obligations.
+      </p>
+
+      <h2>12. Changes</h2>
+      <p>
+        We may update this policy from time to time. The “Last updated” date at the top will change when we do.
+        Material changes may also be noted in Studio or by email to account contacts.
+      </p>
+
+      <h2>13. Contact</h2>
+      <p>
+        Privacy questions about Wave Lens:<br>
         WhatsApp: <a href="https://wa.me/923252265427">+92 325 226 5427</a><br>
-        Email: <a href="mailto:supportwavetech@gmail.online">supportwavetech@gmail.online</a>
+        Email: <a href="mailto:supportwavetech@gmail.online">supportwavetech@gmail.online</a><br>
+        Website: <a href="https://wavelens.online/">wavelens.online</a>
       </p>
 
       <p><a href="/">← Back to Wave Lens</a></p>
@@ -59,6 +165,7 @@
       <nav class="footer__legal">
         <a href="/privacy.html">Privacy Policy</a>
         <a href="/terms.html">Terms &amp; Rules</a>
+        <a href="/#pricing">Pricing</a>
         <a href="/">Home</a>
       </nav>
       <p class="footer__copy">&copy; <span id="year"></span> Wave Tech. All rights reserved.</p>
