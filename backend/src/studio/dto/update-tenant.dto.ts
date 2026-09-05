@@ -1,17 +1,6 @@
-import { IsArray, IsEmail, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
-export class StatusDto {
-  @IsIn(['active', 'inactive'])
-  status!: 'active' | 'inactive';
-}
-
-export class FilterIdsDto {
-  @IsArray()
-  @IsString({ each: true })
-  filterIds!: string[];
-}
-
-export class UpdateTenantDetailsDto {
+export class UpdateTenantDto {
   @IsOptional()
   @IsString()
   @MinLength(2)

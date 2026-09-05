@@ -20,12 +20,14 @@ type NavItem = { href: string; label: string; icon: React.ComponentType<{ classN
 
 const adminNav: NavItem[] = [
   { href: '/admin', label: 'Companies', icon: Building2 },
+  { href: '/admin/integration', label: 'Integration', icon: KeyRound },
   { href: '/admin/filters', label: 'Filter catalog', icon: Sparkles },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
 const tenantNav: NavItem[] = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/integration', label: 'Integration', icon: KeyRound },
   { href: '/dashboard/filters', label: 'Filters', icon: Sparkles },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];

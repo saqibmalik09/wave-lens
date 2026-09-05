@@ -115,7 +115,54 @@ export class AdminService {
       data: { clientSecretHash: TenantsService.hashSecret(clientSecret) },
     });
 
-    return { clientId: tenant.clientId, clientSecret };
+    return { clientId: tenant.clientId, clientSecret, bundleId: tenant.bundleId };
+  }
+
+  async updateTenantDetails(
+    id: number,
+    input: { name?: string; contactEmail?: string; bundleId?: string },
+  ) {
+    const tenant = await this.prisma.tenant.findUnique({ where: { id } });
+    if (!tenant) throw new NotFoundException('Tenant not found');
+
+    const data: { name?: string; contactEmail?: string; bundleId?: string } = {};
+    if (typeof input.name === 'string' && input.name.trim()) {
+      data.name = input.name.trim();
+    }
+    if (typeof input.contactEmail === 'string' && input.contactEmail.trim()) {
+      data.contactEmail = input.contactEmail.trim().toLowerCase();
+    }
+    if (typeof input.bundleId === 'string' && input.bundleId.trim()) {
+      const bundleId = input.bundleId.trim();
+      if (bundleId !== tenant.bundleId) {
+        const clash = await this.prisma.tenant.findFirst({
+          where: { bundleId, NOT: { id } },
+        });
+        if (clash) {
+          throw new BadRequestException('This package / bundle ID is already registered');
+        }
+        data.bundleId = bundleId;
+      }
+    }
+
+    if (Object.keys(data).length === 0) {
+      throw new BadRequestException('No changes to save');
+    }
+
+    const updated = await this.prisma.tenant.update({
+      where: { id },
+      data,
+    });
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      contactEmail: updated.contactEmail,
+      bundleId: updated.bundleId,
+      clientId: updated.clientId,
+      status: updated.status,
+      createdAt: updated.createdAt,
+    };
   }
 
   async listFilters() {

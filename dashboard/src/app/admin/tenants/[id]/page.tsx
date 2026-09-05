@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { PageHeader } from '@/components/dashboard/layout';
-import { CredentialsPanel } from '@/components/dashboard/credentials-panel';
+import { TenantKeysForm } from '@/components/dashboard/tenant-keys-form';
 import { FilterToggleGrid } from '@/components/dashboard/filter-grid';
 import { Badge, Card, OutlineButton, PrimaryButton } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
-import { apiFetch, ApiError, type FilterItem } from '@/lib/utils';
+import { apiFetch, ApiError, getApiUrl, type FilterItem } from '@/lib/utils';
 
 interface TenantDetail {
   tenant: {
@@ -36,6 +36,7 @@ export default function AdminTenantPage() {
   const [entitled, setEntitled] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingDetails, setSavingDetails] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [newSecret, setNewSecret] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -123,6 +124,25 @@ export default function AdminTenantPage() {
     }
   };
 
+  const saveDetails = async (input: { name: string; contactEmail: string; bundleId: string }) => {
+    if (!token) return;
+    setSavingDetails(true);
+    setError('');
+    setMessage('');
+    try {
+      await apiFetch(`/v1/admin/tenants/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(input),
+      }, token);
+      setMessage('Company details saved.');
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to save details');
+    } finally {
+      setSavingDetails(false);
+    }
+  };
+
   if (loading || !detail) {
     return <div className="py-20 text-center text-muted-foreground">{error || 'Loading…'}</div>;
   }
@@ -159,13 +179,14 @@ export default function AdminTenantPage() {
       )}
 
       <div className="grid xl:grid-cols-2 gap-6 mb-8">
-        <CredentialsPanel
-          clientId={tenant.clientId}
-          bundleId={tenant.bundleId}
-          status={tenant.status}
-          onRegenerate={regenerateSecret}
-          regenerating={regenerating}
+        <TenantKeysForm
+          value={tenant}
           newSecret={newSecret}
+          saving={savingDetails}
+          regenerating={regenerating}
+          onSave={saveDetails}
+          onRegenerate={regenerateSecret}
+          apiUrl={getApiUrl()}
         />
 
         <Card>
@@ -188,6 +209,11 @@ export default function AdminTenantPage() {
               <dd>{enabledFilterIds.length} active in app</dd>
             </div>
           </dl>
+          <p className="text-sm mt-4">
+            <Link href="/admin/integration" className="text-primary hover:underline">
+              Open Integration (PDF guides) →
+            </Link>
+          </p>
 
           <h3 className="font-medium text-sm mt-6 mb-3">Portal users</h3>
           <ul className="space-y-2">

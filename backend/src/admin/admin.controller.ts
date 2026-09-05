@@ -3,7 +3,7 @@ import { UserRole } from '@prisma/client';
 import { CurrentUser, JwtAuthGuard, Roles, RolesGuard } from '../auth/jwt-auth.guard';
 import type { AuthUser } from '../auth/auth.service';
 import { AdminService } from './admin.service';
-import { FilterIdsDto, StatusDto } from './dto/admin.dto';
+import { FilterIdsDto, StatusDto, UpdateTenantDetailsDto } from './dto/admin.dto';
 
 @Controller('v1/admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -19,6 +19,11 @@ export class AdminController {
   @Get('tenants/:id')
   getTenant(@Param('id', ParseIntPipe) id: number) {
     return this.admin.getTenant(id);
+  }
+
+  @Patch('tenants/:id')
+  updateTenant(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTenantDetailsDto) {
+    return this.admin.updateTenantDetails(id, body);
   }
 
   @Patch('tenants/:id/status')
