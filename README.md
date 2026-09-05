@@ -59,8 +59,12 @@ curl "http://localhost:3000/v1/license/status?client_id=wl_demo_client&client_se
 ### Server deploy
 
 ```bash
-cd ~/wave-lens && npm run deploy   # pull → backend migrate/build/seed → dashboard build → pm2 restart
+cd ~/wave-lens && npm run deploy
 ```
+
+Deploys **backend** (API), **dashboard** (Studio), and **website** only.  
+Optional: `npm run deploy:backend` · `deploy:dashboard` · `deploy:website`  
+Nginx/SSL (when needed): `bash deploy/sync-nginx.sh`
 
 ## Roadmap (phases)
 

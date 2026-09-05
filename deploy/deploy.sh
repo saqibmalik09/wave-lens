@@ -1,70 +1,68 @@
 #!/usr/bin/env bash
-# Wave Lens one-command server deploy.
+# Simple Wave Lens deploy (run on the server):
+#   npm run deploy              # all: pull + backend + dashboard + website
+#   npm run deploy:backend
+#   npm run deploy:dashboard
+#   npm run deploy:website
 #
-#   cd ~/wave-lens && npm run deploy
-#
-# Pulls latest code, then: backend (install → migrate → build → seed → restart)
-# and dashboard (install → build → restart). Fails fast on any error, so a broken
-# build never restarts a service with stale/partial output.
+# Nginx/SSL (one-time / when configs change):
+#   bash deploy/sync-nginx.sh
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-echo ""
-echo "==> [1/8] Pulling latest code"
-git pull --ff-only
+TARGET="${1:-all}"
 
-echo ""
-echo "==> [2/8] Backend: install + migrate + build"
-cd "$ROOT/backend"
-npm install
-npx prisma migrate deploy
-npx prisma generate
-npm run build
-# Seed is idempotent (upserts) — keeps the filter catalog & configs in sync.
-npm run prisma:seed
+deploy_backend() {
+  echo "==> Backend"
+  cd "$ROOT/backend"
+  npm install
+  npx prisma migrate deploy
+  npx prisma generate
+  npm run build
+  pm2 restart wavelens-api --update-env 2>/dev/null \
+    || pm2 start npm --name wavelens-api --cwd "$ROOT/backend" -- run start
+}
 
-echo ""
-echo "==> [3/8] Backend: restart"
-pm2 restart wavelens-api --update-env 2>/dev/null \
-  || pm2 start npm --name wavelens-api --cwd "$ROOT/backend" -- run start
+deploy_dashboard() {
+  echo "==> Dashboard"
+  cd "$ROOT/dashboard"
+  npm install
+  npm run build
+  pm2 restart wavelens-studio --update-env 2>/dev/null \
+    || pm2 start npm --name wavelens-studio --cwd "$ROOT/dashboard" -- run start
+}
 
-echo ""
-echo "==> [4/8] Dashboard: install + build"
-cd "$ROOT/dashboard"
-npm install
-npm run build
+deploy_website() {
+  echo "==> Website"
+  mkdir -p /var/www/wavelens-website
+  cp -r "$ROOT/website/"* /var/www/wavelens-website/
+}
 
-echo ""
-echo "==> [5/8] Dashboard: restart"
-pm2 restart wavelens-studio --update-env 2>/dev/null \
-  || pm2 start npm --name wavelens-studio --cwd "$ROOT/dashboard" -- run start
+case "$TARGET" in
+  all)
+    echo "==> Pull"
+    git pull --ff-only
+    deploy_backend
+    deploy_dashboard
+    deploy_website
+    ;;
+  backend)
+    deploy_backend
+    ;;
+  dashboard)
+    deploy_dashboard
+    ;;
+  website)
+    deploy_website
+    ;;
+  *)
+    echo "Usage: bash deploy/deploy.sh [all|backend|dashboard|website]"
+    exit 1
+    ;;
+esac
 
-echo ""
-echo "==> [6/8] Website: copy static files to /var/www/wavelens-website"
-mkdir -p /var/www/wavelens-website
-BUILD_ID="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || date +%s)"
-STAGE="$(mktemp -d)"
-cp -r "$ROOT/website/"* "$STAGE/"
-# Cache-bust CSS + hero image so deploys show immediately (nginx may still cache assets separately).
-for page in "$STAGE"/*.html; do
-  [ -f "$page" ] || continue
-  sed -i "s|/styles.css|/styles.css?v=${BUILD_ID}|g" "$page"
-  sed -i "s|mobile-live-filters-mockup.png|mobile-live-filters-mockup.png?v=${BUILD_ID}|g" "$page"
-done
-cp -r "$STAGE/"* /var/www/wavelens-website/
-rm -rf "$STAGE"
-echo "    Published website (build ${BUILD_ID})"
-
-echo ""
-echo "==> [7/8] Nginx + SSL (wavelens.online HTTPS)"
-bash "$ROOT/deploy/sync-nginx.sh"
-
-echo ""
-echo "==> [8/8] Save pm2 process list"
-pm2 save
-
-echo ""
-echo "==> Deploy complete"
-pm2 list
+pm2 save 2>/dev/null || true
+echo "==> Done ($TARGET)"
+pm2 list 2>/dev/null || true

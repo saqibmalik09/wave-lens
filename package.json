@@ -2,8 +2,11 @@
   "name": "wave-lens",
   "version": "0.3.0",
   "private": true,
-  "description": "Wave Lens monorepo — run `npm run deploy` on the server to pull, migrate, build, restart backend + dashboard, and publish the marketing website.",
+  "description": "Wave Lens monorepo — npm run deploy on the server (backend + dashboard + website).",
   "scripts": {
-    "deploy": "bash deploy/deploy.sh"
+    "deploy": "bash deploy/deploy.sh",
+    "deploy:backend": "bash deploy/deploy.sh backend",
+    "deploy:dashboard": "bash deploy/deploy.sh dashboard",
+    "deploy:website": "bash deploy/deploy.sh website"
   }
 }
